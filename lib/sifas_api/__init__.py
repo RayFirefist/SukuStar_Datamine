@@ -10,6 +10,8 @@ class SifasApi:
         self.credentialsData = json.dumps(open(credentialsPath, "r").read())
 
     def makeRequest(self, endpoint:str, method:str="POST", data:dict={}):
+        if endpoint[0] == "/":
+            endpoint = endpoint[1:]
         # TODO HEADERS
         response = requests.request(method, self.serverUrl + self.endpoint + endpoint, data=data)
 
@@ -17,6 +19,12 @@ class SifasApi:
             print(response.text)
             return json.loads(response.text)
         else:
+            # print(response.headers)
+            try:
+                response.headers['X-Maintenance']
+                raise Exception("Maintenance")
+            except KeyError:
+                pass
             errorMessage = "ERROR HTTP %i : %s" % (response.status_code, response.text)
             print(errorMessage)
             raise Exception("HTTP status not 200 (%i)" % response.status_code)
