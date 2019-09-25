@@ -4,6 +4,7 @@ from unitypack.export import OBJMesh
 from unitypack.utils import extract_audioclip_samples
 
 from io import BytesIO
+import os
 
 class UnityAssetBundle:
 
@@ -45,34 +46,34 @@ class UnityAssetBundle:
 	def getAssetsList(self):
 		if not self.bundleLoaded:
 			raise Exception("Bundle is not loaded. Load with setBundleByPath or setBundleByFile")
-
 		for asset in self.unityBundle.assets:
 			return self.extractAssetBundle(asset, False)
-
 		return []
 
 	def extractAssets(self):
 		if not self.bundleLoaded:
 			raise Exception("Bundle is not loaded. Load with setBundleByPath or setBundleByFile")
-
 		for asset in self.unityBundle.assets:
 			return self.extractAssetBundle(asset, True)
-
 		return []
 
-	def get_output_path(filename):
+	def get_output_path(self, filename):
 		return self.basePath + filename
 
 	def write_to_file(self, filename, contents, mode="w"):
 		path = self.get_output_path(filename)
+		dict_tab = path.split("/")
+		dict_tab.pop()
+		try:
+			os.makedirs("/".join(dict_tab))
+		except FileExistsError:
+			pass
 		with open(path, mode) as f:
 			written = f.write(contents)
-		print("Written %i bytes to %r" % (written, path))
+			print("Written %i bytes to %r" % (written, path))
 
 	def extractAssetBundle(self, asset, extractFlag=True):
-
 		outputPaths = []
-
 		for id, obj in asset.objects.items():
 			if obj.type not in self.handle_formats:
 				continue

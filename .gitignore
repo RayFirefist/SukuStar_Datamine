@@ -3,3 +3,6 @@
 
 # test files
 test*
+
+# output path
+out/*
