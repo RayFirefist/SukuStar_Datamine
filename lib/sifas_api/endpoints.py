@@ -1,3 +1,5 @@
+from enum import Enum
+
 class SifasEndpoints(Enum):
     ACCESSORY_ALLUNEQUIP = "/accessory/allUnequip"
     ACCESSORY_MELT = "/accessory/melt"
@@ -44,3 +46,5 @@ class SifasEndpoints(Enum):
     #
     LOGIN_LOGIN = "/login/login"
     LOGIN_STARTUP = "/login/startup"
+    #
+    ASSET_GETPACKURL = "/asset/getPackUrl"

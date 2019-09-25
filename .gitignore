@@ -1,2 +1,5 @@
 # pycache paths
 *__pycache__*
+
+# test files
+test*

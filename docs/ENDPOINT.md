@@ -61,7 +61,7 @@
 36E9BDC, r'/gacha/fixRetry
 36E9BE0, r'/gacha/draw
 36E9BE4, r'/bootstrap/getClearedPlatformAchievement
-36E9BE8, r'/asset/getPackUrl
+asset/getPackUrl
 36E9BEC, r'/billing/googlePurchase
 36E9BF0, r'/trainingTree/gradeUpCard
 36E9BF4, r'/trainingTree/levelUpCard

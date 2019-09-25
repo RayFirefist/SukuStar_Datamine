@@ -8,6 +8,8 @@ class SifasApi:
         self.serverUrl = "https://jp-real-prod-v4tadlicuqeeumke.api.game25.klabgames.net/"
         self.endpoint = "ep1002/"
         self.credentialsData = json.dumps(open(credentialsPath, "r").read())
+        self.key1 = "i0qzc6XbhFfAxjN2"
+        self.key2 = 0xB73DA9C0EE7116836995B5ACED4AA33B095ECAF77B33605833FD759E6E743F1D
 
     def makeRequest(self, endpoint:str, method:str="POST", data:dict={}):
         if endpoint[0] == "/":
