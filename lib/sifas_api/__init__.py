@@ -182,6 +182,12 @@ class SifasApi:
         })
         self.authCount += 1
         #self.updateFile()
+        self.sessionKey = self.xor(rnd, base64.b64decode(r['session_key']))
+        self.termsAgreement()
+
+    # agree ToS
+    def termsAgreement(self):
+        r = self.send(SifasEndpoints.TERMS_AGREEMENT, {"terms_version":1})
 
     # This allows to give you back a list of URLs which you can use for download packs from remote server
     def assetGetPackUrl(self, packs:list):

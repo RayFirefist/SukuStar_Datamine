@@ -48,3 +48,5 @@ class SifasEndpoints(Enum):
     LOGIN_STARTUP = "/login/startup"
     #
     ASSET_GETPACKURL = "/asset/getPackUrl"
+    # 
+    TERMS_AGREEMENT = "/terms/agreement"
