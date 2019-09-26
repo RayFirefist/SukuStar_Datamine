@@ -83,7 +83,7 @@ def getKeyData(k:str):
     for x in range(0, k.__len__()):
         if x % 8 > 0:
             continue
-        print("KEY %s" % k[x:x+8])
+        # print("KEY %s" % k[x:x+8])
         keys.append(int(k[x:x+8].decode("utf8"), 16))
     return keys
 
