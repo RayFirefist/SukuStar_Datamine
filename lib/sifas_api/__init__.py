@@ -22,15 +22,21 @@ logging.basicConfig(level=logging.DEBUG)
 class SifasApi:
 
     def __init__(self, credentialsPath:str="./config/credentials.json"):
-        self.sequence = 1
-        self.authCount = 1
+        # credentials data
+        self.credentialsData = json.loads(open(credentialsPath, "r").read())
+        # Server elements
         self.serverUrl = "https://jp-real-prod-v4tadlicuqeeumke.api.game25.klabgames.net"
         self.endpoint = "/ep1002/"
-        self.credentialsData = json.loads(open(credentialsPath, "r").read())
+        # Flags
+        self.sequence = 1
+        try:
+            self.authCount = self.credentialsData['auth_count']
+        except:
+            self.authCount = 1
+        # Initial session key
         self.sessionKey = "i0qzc6XbhFfAxjN2".encode("utf8")
-        self.key2 = 0xB73DA9C0EE7116836995B5ACED4AA33B095ECAF77B33605833FD759E6E743F1D
-        self.assetsVersion = ""
         self.manifestVersion = ""
+        # part of the requests
         self.params = {
             "p": "a",
             "id": self.sequence,
@@ -78,6 +84,7 @@ class SifasApi:
         result = '[%s,"%s"]' % (data, signature)
         return result
 
+    # Principal request function
     def makeRequest(self, endpoint:str, data:dict={}):
         if endpoint[0] == "/":
             endpoint = endpoint[1:]

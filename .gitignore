@@ -8,10 +8,16 @@ test*
 out/*
 
 # any db file
-*.db
+*.db*
 
 # no .vscode
 .vscode*
 
 # PHP files
 *.php
+
+# Assets path
+assets*
+
+# masterdata_i_ja
+/masterdata_i_ja
