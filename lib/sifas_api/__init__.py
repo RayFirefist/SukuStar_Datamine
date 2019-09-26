@@ -9,9 +9,11 @@ import time
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.primitives.asymmetric import padding
+import zlib
 
 from lib.sifas_api.endpoints import SifasEndpoints
 
+from lib.penguin import masterDataRead, decrypt_stream, FileStream
 
 class SifasApi:
     def __init__(self, credentials="./config/credentials.json"):
@@ -22,11 +24,11 @@ class SifasApi:
         self.authCount = 1
         self.manifestVersion = "0"
         self.s = requests.session()
-        self.sessionKey = b"i0qzc6XbhFfAxjN2"
+        self.sessionKey = b"P5kjzssUjcDFD0b1"
         self.authorizationKey = ""
         self.rnd=None
-        self.url = "https://jp-real-prod-v4tadlicuqeeumke.api.game25.klabgames.net/ep1002/"
-        # account
+        self.url = "https://jp-real-prod-v4tadlicuqeeumke.api.game25.klabgames.net/ep1001/"
+        # account data
         try:
             jsonCred = json.loads(open(credentials, "r").read())
             try:
@@ -46,6 +48,7 @@ class SifasApi:
         except:
             print("Failed to parse credentials file")
 
+    # Signing the data to ship to the server (must-do)
     def sign(self, endpoint, data):
         endpoint = endpoint.encode("utf8")
         data_ = data.encode("utf8")
@@ -54,6 +57,7 @@ class SifasApi:
         result = '[%s,"%s"]' % (data, signature)
         return result
 
+    # writing data to the credentials file (WIP)
     def updateFile(self):
         open(self.credentialsFile, "w").write(
             json.dumps(
@@ -73,6 +77,7 @@ class SifasApi:
             result.append(a[i] ^ b[i])
         return result
 
+    # sends the data to the server
     def send(self, endpoint : SifasEndpoints, data : dict):
         endpoint = endpoint.value
         url = self.url + endpoint
@@ -115,6 +120,16 @@ class SifasApi:
                 pass
             raise Exception("HTTP not 200 (%i)" % response.status_code)
 
+    # Retreive data (useful for db downloading)
+    def retreive(self, endpoint):
+        url = self.url + endpoint
+        response = requests.get(url)
+        if response.status_code == 200:
+            return response.content
+        else:
+            raise Exception("GET failed due to HTTP (%i)" % response.status_code)
+
+    # creates the account from scratch
     def loginStartUp(self):
         rnd = os.urandom(0x20)
         pub = serialization.load_pem_public_key(
@@ -144,6 +159,7 @@ class SifasApi:
         self.manifestVersion = "7098477e95883aca"
         self.login()
 
+    # makes login to the server (must-do)
     def login(self):
         rnd = os.urandom(0x20)
         pub = serialization.load_pem_public_key(
@@ -165,10 +181,27 @@ class SifasApi:
             "asset_state": "Fh4FtvLJex9EY7YMhTa2Nze+0+w1r6/Y7gVO8i6ZXpph8rYrHtS9DbQQaNerMIWoGoLsUzlVMnUD62/xUhCNoWw9ahMyXqenHg=="
         })
         self.authCount += 1
-        self.updateFile()
+        #self.updateFile()
 
     # This allows to give you back a list of URLs which you can use for download packs from remote server
     def assetGetPackUrl(self, packs:list):
         r = self.send(SifasEndpoints.ASSET_GETPACKURL, {"pack_names": packs})
         return r['url_list']
 
+    # This allows to get the list of database 
+    def getDbList(self):
+        return masterDataRead(FileStream(self.retreive("/static/%s/masterdata_i_ja" % self.manifestVersion)))
+
+    # Downloads the databases and saves them into /assets/db
+    def downloadDbs(self, dbsList:dict=None):
+        try:
+            os.makedirs("./assets/db")
+        except FileExistsError:
+            pass
+        if dbsList is None:
+            dbsList = self.getDbList()
+        for database in dbsList:
+            baseFile = self.retreive("/static/%s/%s" % (self.manifestVersion, database['db_name']))
+            decrypted = decrypt_stream(baseFile, database['db_keys_list'][0], database['db_keys_list'][1], database['db_keys_list'][2])
+            deflated = zlib.decompress(decrypted, -zlib.MAX_WBITS)
+            open("./assets/db/%s" % database['db_name'], "wb").write(deflated)

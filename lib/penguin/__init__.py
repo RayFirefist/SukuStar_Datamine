@@ -13,15 +13,20 @@ class FileStream:
     def __init__(self, file):
         self.position = 0
         self.littleEndian = True
-        self.f = open(file, "rb")
-        if self.f == False:
-            raise Exception("Unable to open %s" % file)
-        self.data = self.f.read()
+        if not type(file) == bytes:
+            self.f = open(file, "rb")
+            if self.f == False:
+                raise Exception("Unable to open %s" % file)
+            self.data = self.f.read()
+        else:
+            self.data = file
         self.size = self.data.__len__()
-        print(self.data)
 
     def __del__(self):
-        self.f.close()
+        try:
+            self.f.close()
+        except AttributeError:
+            pass
 
     def read(self, length:int):
         # print(self.position, length)
