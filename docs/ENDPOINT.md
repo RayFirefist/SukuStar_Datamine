@@ -40,47 +40,47 @@
 /notice/fetchNotice
 /notice/fetchNoticeDetail
 /notice/fetchNoticeList
-36E9B94, r'/card/getOtherUserCard
-36E9B98, r'/present/fetch
-36E9B9C, r'/userProfile/fetchProfile
-36E9BA0, r'/dataLink/fetchSchoolIdolFestivalIdDataAfterLogin
-36E9BA4, r'/dataLink/fetchSchoolIdolFestivalIdDataBeforeLogin
-36E9BA8, r'/schoolIdolFestivalIdReward/fetch
-36E9BAC, r'/shop/fetchShopEventExchange
-36E9BB0, r'/shop/fetchShopItemExchange
-36E9BB4, r'/shop/fetchShopPack
-36E9BB8, r'/shop/fetchShopSnsCoin
-36E9BBC, r'/shop/fetchShopTop
-36E9BC0, r'/still/fetch
-36E9BC4, r'/trainingTree/fetchTrainingTree
-36E9BC8, r'/eventMarathon/finishEventStory
-36E9BCC, r'/live/finish
-36E9BD0, r'/story/finishUserStoryMain
-36E9BD4, r'/communicationMember/finishUserStoryMember
-36E9BD8, r'/communicationMember/finishUserStorySide
-36E9BDC, r'/gacha/fixRetry
-36E9BE0, r'/gacha/draw
-36E9BE4, r'/bootstrap/getClearedPlatformAchievement
-asset/getPackUrl
-36E9BEC, r'/billing/googlePurchase
-36E9BF0, r'/trainingTree/gradeUpCard
-36E9BF4, r'/trainingTree/levelUpCard
-36E9BF8, r'/dataLink/linkGameService
-36E9BFC, r'/dataLink/linkOnStartUpGameService
-36E9C00, r'/dataLink/linkSchoolIdolFestivalId
-36E9C04, r'/login/login
-36E9C08, r'/dataLink/migrateGameService
-36E9C0C, r'/dataLink/migrateGameServiceBeforeLogin
-36E9C10, r'/dataLink/migrateSchoolIdolFestivalId
-36E9C14, r'/dataLink/migrateSchoolIdolFestivalIdBeforeLogin
-36E9C18, r'/noop/noop
-36E9C1C, r'/billing/prePurchase
-36E9C20, r'/infoTrigger/read
-36E9C24, r'/infoTrigger/readByType
-36E9C28, r'/infoTrigger/readCardGradeUp
-36E9C2C, r'/infoTrigger/readEventMarathonResult
-36E9C30, r'/infoTrigger/readExpiredGiftBox
-36E9C34, r'/infoTrigger/readGachaPointExchange
+/card/getOtherUserCard
+/present/fetch
+/userProfile/fetchProfile
+/dataLink/fetchSchoolIdolFestivalIdDataAfterLogin
+/dataLink/fetchSchoolIdolFestivalIdDataBeforeLogin
+/schoolIdolFestivalIdReward/fetch
+/shop/fetchShopEventExchange
+/shop/fetchShopItemExchange
+/shop/fetchShopPack
+/shop/fetchShopSnsCoin
+/shop/fetchShopTop
+/still/fetch
+/trainingTree/fetchTrainingTree
+/eventMarathon/finishEventStory
+/live/finish
+/story/finishUserStoryMain
+/communicationMember/finishUserStoryMember
+/communicationMember/finishUserStorySide
+/gacha/fixRetry
+/gacha/draw
+/bootstrap/getClearedPlatformAchievement
+/asset/getPackUrl
+/billing/googlePurchase
+/trainingTree/gradeUpCard
+/trainingTree/levelUpCard
+/dataLink/linkGameService
+/dataLink/linkOnStartUpGameService
+/dataLink/linkSchoolIdolFestivalId
+/login/login
+/dataLink/migrateGameService
+/dataLink/migrateGameServiceBeforeLogin
+/dataLink/migrateSchoolIdolFestivalId
+/dataLink/migrateSchoolIdolFestivalIdBeforeLogin
+/noop/noop
+/billing/prePurchase
+/infoTrigger/read
+/infoTrigger/readByType
+/infoTrigger/readCardGradeUp
+/infoTrigger/readEventMarathonResult
+/infoTrigger/readExpiredGiftBox
+/infoTrigger/readGachaPointExchange
 36E9C38, r'/infoTrigger/readMemberLoveLevelUp
 36E9C3C, r'/loginBonus/readLoginBonus
 36E9C40, r'/referenceBook/saveReferenceBook

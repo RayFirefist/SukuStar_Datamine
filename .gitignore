@@ -6,3 +6,12 @@ test*
 
 # output path
 out/*
+
+# any db file
+*.db
+
+# no .vscode
+.vscode*
+
+# PHP files
+*.php
