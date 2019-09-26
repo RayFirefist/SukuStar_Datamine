@@ -1,71 +1,71 @@
-import requests
-import json
-import os
-import time
-
-import logging
-
-#import curlify
-
-from hyper import HTTPConnection
-
-import base64
 import hmac
 from hashlib import sha1
+from urllib import parse
+import base64
+import json
+import os
+import requests
+import time
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.primitives.asymmetric import padding
 
+from lib.sifas_api.endpoints import SifasEndpoints
 
-logging.basicConfig(level=logging.DEBUG)
 
 class SifasApi:
-
-    def __init__(self, credentialsPath:str="./config/credentials.json"):
-        # credentials data
-        self.credentialsData = json.loads(open(credentialsPath, "r").read())
-        # Server elements
-        self.serverUrl = "https://jp-real-prod-v4tadlicuqeeumke.api.game25.klabgames.net"
-        self.endpoint = "/ep1002/"
-        # Flags
+    def __init__(self, credentials="./config/credentials.json"):
+        self.credentialsFile = credentials
+        # setup useful variables
+        self.uid = 0
         self.sequence = 1
+        self.authCount = 1
+        self.manifestVersion = "0"
+        self.s = requests.session()
+        self.sessionKey = b"i0qzc6XbhFfAxjN2"
+        self.authorizationKey = ""
+        self.rnd=None
+        self.url = "https://jp-real-prod-v4tadlicuqeeumke.api.game25.klabgames.net/ep1002/"
+        # account
         try:
-            self.authCount = self.credentialsData['auth_count']
+            jsonCred = json.loads(open(credentials, "r").read())
+            try:
+                self.uid = jsonCred['user_id']
+            except KeyError:
+                print("Failed to parse user id")
+            try:
+                self.authorizationKey = jsonCred['authorization_key']
+                self.pw = jsonCred['password']
+                self.sessionKey = self.xor(self.sessionKey, base64.b64decode(self.pw))
+            except KeyError:
+                print("Failed to create session key")
+            try:
+                self.authCount = jsonCred['authorization_count']
+            except KeyError:
+                print("Failed to obtain authorization counter")
         except:
-            self.authCount = 1
-        # Initial session key
-        self.sessionKey = "i0qzc6XbhFfAxjN2".encode("utf8")
-        self.manifestVersion = ""
-        # part of the requests
-        self.params = {
-            "p": "a",
-            "id": self.sequence,
-            "u": self.credentialsData['user_id'],
-            "t": int(time.time()*1000)
-        }
-        self.headers = headers = {
-            'Content-Type': "application/json",
-            'User-Agent': "allstars/1 CFNetwork/978.0.7 Darwin/18.7.0",
-            'Accept': "*/*",
-            'Host': "jp-real-prod-v4tadlicuqeeumke.api.game25.klabgames.net",
-            'Accept-Encoding': "gzip, deflate",
-            'Content-Length': "380",
-            'Connection': "keep-alive",
-            'cache-control': "no-cache"
-        }
+            print("Failed to parse credentials file")
 
-    def updateTime(self):
-        self.params["t"] = int(time.time()*1000)
-        pass
+    def sign(self, endpoint, data):
+        endpoint = endpoint.encode("utf8")
+        data_ = data.encode("utf8")
+        print(endpoint + b" " + data_)
+        signature = hmac.new(self.sessionKey, endpoint + b" " + data_, sha1).hexdigest()
+        result = '[%s,"%s"]' % (data, signature)
+        return result
 
-    def updateManifestVersion(self, manifestVersion):
-        self.params['mv'] = manifestVersion
-        pass
-
-    def updateSequence(self):
-        self.params['id'] = self.sequence
-        self.sequence += 1
-        pass
+    def updateFile(self):
+        open(self.credentialsFile, "w").write(
+            json.dumps(
+                {
+                    "user_id": self.uid,
+                    "authorization_key": self.authorizationKey,
+                    "authorization_count": self.authCount,
+                    "password": base64.b64encode(self.pw).decode("utf-8"),
+                    "rnd": base64.b64encode(self.rnd).decode("utf-8")
+                }
+            )
+        )
 
     def xor(self, a, b):
         result = bytearray()
@@ -73,80 +73,56 @@ class SifasApi:
             result.append(a[i] ^ b[i])
         return result
 
-    # Creates the signature for request
-    def sign(self, endpoint:str, data):
-        endpoint = endpoint.encode("utf8")
-        if type(data) == dict:
-            data = json.dumps(data)
-        data_ = data.encode("utf8")
-        print(b"/" + endpoint + b" " + data_)
-        signature = hmac.new(self.sessionKey, b"/" + endpoint + b" " + data_, sha1).hexdigest()
-        result = '[%s,"%s"]' % (data, signature)
-        return result
+    def send(self, endpoint : SifasEndpoints, data : dict):
+        endpoint = endpoint.value
+        url = self.url + endpoint
+        params = {"p": "i", "id": self.sequence, "t": int(time.time()*1000)}
+        self.sequence += 1
+        headers = {
+            "user-agent": "allstars/1 CFNetwork/978.0.7 Darwin/18.7.0",
+            "content-type": "application/json"
+        }
 
-    # Principal request function
-    def makeRequest(self, endpoint:str, data:dict={}):
-        if endpoint[0] == "/":
-            endpoint = endpoint[1:]
+        if params['id'] == 1:
+            del(params["t"])
 
-        connection = HTTPConnection(self.serverUrl)
-
-        self.updateSequence()
-        self.updateTime()
-
-        url = self.serverUrl + self.endpoint + endpoint
-        params = self.params
+        if self.manifestVersion != "0":
+            params["mv"] = self.manifestVersion
+        if self.uid > 0:
+            params['u'] = str(self.uid)
 
         if data is not None:
             data = json.dumps(data, separators=(',', ':')).replace("=", "\u003d")
         else:
             data = "null"
 
-        if not self.manifestVersion == "":
-            params['mv'] = self.manifestVersion
-        if params['u'] == 0:
-            del params['u']
-
-        params_url = "?"
-        for x, y in params:
-            params_url += "%s=%s&" % x, y
-
-        request = connection.request("POST", self.endpoint + endpoint + params_url, headers=self.headers, body=json.dumps(self.sign(endpoint, data)).encode("utf8"))
+        url_ = endpoint + "?" + parse.urlencode(params)
+        data = self.sign(url_, data)
+        print(data)
+        response = self.s.post(url, params=params, data=data, headers=headers)
         
-        #response = requests.post(url, data=, params=self.params, headers=self.headers)
-
-        response = connection.get_response(request)
-        data = response.read()
-
-        #sprint(curlify.to_curl(response.request))
-
         if response.status_code == 200:
-            print(response.text)
-            return json.loads(response.text)
+            rr = response.text
+            print(rr)
+            jsonData = json.loads(rr)
+            self.manifestVersion = jsonData[1]
+            return jsonData[3]
         else:
-            print(response.headers)
             try:
                 response.headers['X-Maintenance']
                 raise Exception("Maintenance")
             except KeyError:
                 pass
-            errorMessage = "ERROR HTTP %i : %s" % (response.status_code, response.text)
-            print(errorMessage)
-            raise Exception("HTTP status not 200 (%i)" % response.status_code)
+            raise Exception("HTTP not 200 (%i)" % response.status_code)
 
-    def prepareLogin(self):
+    def loginStartUp(self):
         rnd = os.urandom(0x20)
         pub = serialization.load_pem_public_key(
             open("./lib/sifas_api/klb.pub", "rb").read(),
             backend=default_backend()
         )
-        return rnd, pub
 
-    def loginStartUp(self):
-        rnd, pub = self.prepareLogin()
-        self.params['u'] = 0
-
-        r = self.makeRequest("login/startup", data={
+        r = self.send(SifasEndpoints.LOGIN_STARTUP, {
             "mask": str(base64.b64encode(pub.encrypt(
                 rnd,
                 padding.OAEP(
@@ -158,15 +134,24 @@ class SifasApi:
             "resemara_detection_identifier": "",
             "time_difference": 32400
         })
-        self.params['u'] = r['user_id']
-        auth_key = base64.b64decode(r['authorization_key'])
+        print(r)
+        self.uid = r['user_id']
+        self.authorizationKey = r['authorization_key']
+        auth_key = base64.b64decode(self.authorizationKey)
         self.sessionKey = self.xor(auth_key, rnd)
+        self.pw = self.xor(auth_key, self.sessionKey)
+        self.rnd = rnd
         self.manifestVersion = "7098477e95883aca"
+        self.login()
 
     def login(self):
-        rnd, pub = self.prepareLogin()
+        rnd = os.urandom(0x20)
+        pub = serialization.load_pem_public_key(
+            open("./lib/sifas_api/klb.pub", "rb").read(),
+            backend=default_backend()
+        )
 
-        r = self.makeRequest("login/login", data={
+        r = self.send(SifasEndpoints.LOGIN_LOGIN, {
             "mask": str(base64.b64encode(pub.encrypt(
                 rnd,
                 padding.OAEP(
@@ -175,13 +160,15 @@ class SifasApi:
                     label=None
                 )
             )), encoding="utf8"),
-            "user_id": self.credentialsData['user_id'],
+            "user_id": self.uid,
             "auth_count": self.authCount,
             "asset_state": "Fh4FtvLJex9EY7YMhTa2Nze+0+w1r6/Y7gVO8i6ZXpph8rYrHtS9DbQQaNerMIWoGoLsUzlVMnUD62/xUhCNoWw9ahMyXqenHg=="
         })
-
         self.authCount += 1
-        pass
+        self.updateFile()
 
+    # This allows to give you back a list of URLs which you can use for download packs from remote server
+    def assetGetPackUrl(self, packs:list):
+        r = self.send(SifasEndpoints.ASSET_GETPACKURL, {"pack_names": packs})
+        return r['url_list']
 
-    pass

@@ -59,7 +59,7 @@ class SIFAS:
         url_ = endpoint + "?" + parse.urlencode(params)
         data = self.sign(url_, data)
         print(data)
-        r = self.s.post(url, params=params, data=data, headers=headers, verify=False, proxies={"https": "127.0.0.1:8888"})
+        r = self.s.post(url, params=params, data=data, headers=headers, verify=False)
         rr = r.json()
         return rr[3]
 
@@ -82,6 +82,7 @@ class SIFAS:
             "resemara_detection_identifier": "",
             "time_difference": 32400
         })
+        print(r)
         self.uid = r['user_id']
         auth_key = base64.b64decode(r['authorization_key'])
         self.sessionKey = self.xor(auth_key, rnd)

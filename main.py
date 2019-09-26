@@ -5,5 +5,5 @@ api = SifasApi()
 
 #print(SifasEndpoints.ASSET_GETPACKURL.value)
 #api.makeRequest("noop/noop")
-api.login()
-#api.loginStartUp()
+#api.login()
+api.loginStartUp()
