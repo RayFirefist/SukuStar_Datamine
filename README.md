@@ -59,3 +59,4 @@ assetDumper.extractBackground() # extract background images
 - [X] extracting assets
 - [ ] (WIP) assets naming
 - [ ] extract correctly unity files
+- [ ] extract and deal with audio
