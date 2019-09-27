@@ -47,3 +47,15 @@ from lib.sifas_db import AssetDumper
 assetDumper = AssetDumper(api) # you must provide a SifasApi instance here. You can provide None but expect errors since it can't reach server for downloading the necessary files
 assetDumper.extractBackground() # extract background images
 ```
+
+## TODO LIST
+
+- [X] loginStartup
+- [ ] login
+- [X] download database
+- [X] download assets
+- [X] decrypt database and assets
+- [X] reading database
+- [X] extracting assets
+- [ ] (WIP) assets naming
+- [ ] extract correctly unity files
