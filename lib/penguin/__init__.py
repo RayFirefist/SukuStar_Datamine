@@ -60,10 +60,11 @@ class FileStream:
 
 pass
 
-def decrypt_stream(data:bytes, key0:int, key1:int, key2:int):
-    key0 = key0 ^ CONST_KEYS[0]
-    key1 = key1 ^ CONST_KEYS[1]
-    key2 = key2 ^ CONST_KEYS[2]
+def decrypt_stream(data:bytes, key0:int, key1:int, key2:int, isAssets:bool = False):
+    if isAssets == False:
+        key0 = key0 ^ CONST_KEYS[0]
+        key1 = key1 ^ CONST_KEYS[1]
+        key2 = key2 ^ CONST_KEYS[2]
     countView=5
     out=bytearray()
     for position in range(0, data.__len__()):

@@ -24,3 +24,6 @@ assets*
 
 # credentials json
 *credentials.json
+
+# temp folder
+*temp*
