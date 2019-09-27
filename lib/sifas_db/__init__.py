@@ -49,13 +49,28 @@ class AssetDumper:
             print(row)
 
     def extractBackground(self):
+        self.extractAssetsWithKeys("%s/images/background/" % self.assetsPath, "background")
+
+    def extractLive2dSdModel(self):
+        self.extractAssetsWithKeys("%s/images/live2d/sd_models/" % self.assetsPath, "live2d_sd_model")
+
+    def extractTexture(self):
+        self.extractAssetsWithKeys("%s/images/texture/" % self.assetsPath, "texture")
+
+    def extractStage(self):
+        self.extractAssetsWithKeys("%s/models/stage/" % self.assetsPath, "stage")
+
+    def extractMemberModels(self):
+        self.extractAssetsWithKeys("%s/models/member/" % self.assetsPath, "member_model")
+
+    def extractAssetsWithKeys(self, path, table):
         try:
-            os.makedirs("%s/images/background/" % self.assetsPath)
+            os.makedirs(path)
         except FileExistsError:
             pass
         c = self.assets.cursor()
         bundles = []
-        for bundle in c.execute("SELECT DISTINCT pack_name FROM background").fetchall():
+        for bundle in c.execute("SELECT DISTINCT pack_name FROM %s" % table).fetchall():
             bundles.append(bundle[0])
         # Download the data
         self.downloadPacks(
@@ -64,15 +79,15 @@ class AssetDumper:
         # Extract the data
         i=0
         for bundle in bundles:
-            for fileData in c.execute("SELECT head, size, key1, key2 FROM background WHERE pack_name = '%s'" % bundle).fetchall():
+            for fileData in c.execute("SELECT head, size, key1, key2 FROM %s WHERE pack_name = '%s'" % (table, bundle)).fetchall():
                 print("%i.png" % i)
                 data = self.packs[bundle][fileData[0]:fileData[0]+fileData[1]]
                 print("file size %i" % data.__len__())
                 data = decrypt_stream(data, 12345, fileData[2], fileData[3])
-                open(self.assetsPath + "images/background/%i.png" % i, "wb").write(data)
+                open("%s/%i.bin" % (path, i), "wb").write(data)
                 try:
                     data = zlib.decompress(data, -zlib.MAX_WBITS)
-                    open(self.assetsPath + "images/background/%i_un.png" % i, "wb").write(data)
+                    open("%s/%i_un.bin" % (path, i), "wb").write(data)
                 except zlib.error:
                     print("cant uncompress")
                     pass
