@@ -34,3 +34,6 @@ assets*
 
 # Idol Story scripts
 *is*.py
+
+# scripts for test
+*mainE*

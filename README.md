@@ -13,7 +13,6 @@ Name reference: Blazblue Cross Tag Battle's quote: "Can't escape from crossing f
 * Install the dependencies with `pip install -r requirements` or, if you have Windows, run `install_dependencies.bat`
 * Run on cmd/bash/zsh `pip install --no-binary unitypack unitypack` for installing unity assets extraction library
 
-
 ### Sample commands
 
 #### Calling API and making a new account
@@ -40,12 +39,21 @@ api.downloadDbs(dbList) # everything will be downloaded into 'assets/db'
 ```
 
 #### Extracting some assets
+
+WARNING: make sure that you already downloaded/updated your database or you won't see new assets or it will occurr into errors!
+
 ```python
 # not copying the login procedure so you must have logged before
 from lib.sifas_db import AssetDumper
 
 assetDumper = AssetDumper(api) # you must provide a SifasApi instance here. You can provide None but expect errors since it can't reach server for downloading the necessary files
-assetDumper.extractBackground() # extract background images
+assetDumper.extractStillIllus() # extract still illustrations
+assetDumper.extractCardsAsset() # extract cards images (full, icon)
+assetDumper.extractEmblem() # extract titles
+assetDumper.extractTrainingMaterial() # extract training materials thumbnails
+assetDumper.extractMemberInfo() # extract member info images (autograph, standing, icon and thumbnail)
+assetDumper.extractSuit() # extract costumes preview and models (unity3d bundles)
+assetDumper.extractAccessory() # extract accessory thumbnails
 ```
 
 ## TODO LIST
