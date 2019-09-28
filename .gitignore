@@ -27,3 +27,10 @@ assets*
 
 # temp folder
 *temp*
+
+# Kach again scripts
+*ka*.py
+*ka*.bat
+
+# Idol Story scripts
+*is*.py

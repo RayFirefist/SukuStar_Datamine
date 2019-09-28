@@ -113,9 +113,63 @@ class AssetDumper:
         assets = mc.execute("SELECT still_master_id, display_order, still_asset_path FROM m_still_texture").fetchall()
         for asset in assets:
             print("elaboration still %i" % asset[0])
-            # card illustration
+            # still illus
             file = open("%stex_still_%i_%i.jpg" % (path, asset[0], asset[1]), "wb")
             file.write(self.extractSingleAssetWithKeys(path="", table="texture", asset_path=asset[2], forceDownload=forceDownload, returnValue=True))
+            file.close()
+
+    def extractInlineImages(self, forceDownload=False):
+        path = self.assetsPath + "images/inline/"
+        try:
+            os.makedirs(path)
+        except FileExistsError:
+            pass
+        mc = self.master.cursor()
+        ac = self.assets.cursor()
+        assets = mc.execute("SELECT id, path FROM m_inline_image").fetchall()
+        for asset in assets:
+            tempPath = asset[0].split("/")
+            tempPath.pop()
+            try:
+                os.makedirs("%s%s" % (path, "/".join(tempPath)))
+            except FileExistsError:
+                pass
+            print("elaboration inline %s" % asset[0])
+            # inline image
+            file = open("%s%s.png" % (path, asset[0]), "wb")
+            file.write(self.extractSingleAssetWithKeys(path="", table="texture", asset_path=asset[1], forceDownload=forceDownload, returnValue=True))
+            file.close()
+
+    def extractEmblem(self, forceDownload=False):
+        path = self.assetsPath + "images/emblem/"
+        try:
+            os.makedirs(path)
+        except FileExistsError:
+            pass
+        mc = self.master.cursor()
+        ac = self.assets.cursor()
+        assets = mc.execute("SELECT id, emblem_asset_path FROM m_emblem").fetchall()
+        for asset in assets:
+            print("elaboration emblem %i" % asset[0])
+            # inline image
+            file = open("%stex_emblem_%i.jpg" % (path, asset[0]), "wb")
+            file.write(self.extractSingleAssetWithKeys(path="", table="texture", asset_path=asset[1], forceDownload=forceDownload, returnValue=True))
+            file.close()
+
+    def extractAccessory(self, forceDownload=False):
+        path = self.assetsPath + "images/accessory/"
+        try:
+            os.makedirs(path)
+        except FileExistsError:
+            pass
+        mc = self.master.cursor()
+        ac = self.assets.cursor()
+        assets = mc.execute("SELECT id, thumbnail_asset_path FROM m_accessory").fetchall()
+        for asset in assets:
+            print("elaboration accessory %i" % asset[0])
+            # inline image
+            file = open("%stex_accessory_%i.jpg" % (path, asset[0]), "wb")
+            file.write(self.extractSingleAssetWithKeys(path="", table="texture", asset_path=asset[1], forceDownload=forceDownload, returnValue=True))
             file.close()
 
     def extractBackground(self):
@@ -150,7 +204,7 @@ class AssetDumper:
         if asset_path.find("'") > -1:
             if asset_path.find('"') > -1:
                 print("1")
-                query = "SELECT pack_name FROM %s WHERE asset_path = '%s'" % (table, asset_path)
+                query = "SELECT pack_name FROM %s WHERE asset_path = \"%s\"" % (table, asset_path.replace("\"", '""'))
             else:
                 print("1b")
                 query = 'SELECT pack_name FROM %s WHERE asset_path = "%s"' % (table, asset_path)
@@ -176,7 +230,7 @@ class AssetDumper:
         for bundle in bundles:
             if asset_path.find("'") > -1:
                 if asset_path.find('"') > -1:
-                    query = "SELECT head, size, key1, key2, asset_path FROM %s WHERE pack_name = '%s' AND asset_path = '%s'" % (table, bundle, asset_path)
+                    query = "SELECT head, size, key1, key2, asset_path FROM %s WHERE pack_name = '%s' AND asset_path = \"%s\"" % (table, bundle, asset_path.replace("\"", '""'))
                 else:
                     query = 'SELECT head, size, key1, key2, asset_path FROM %s WHERE pack_name = "%s" AND asset_path = "%s"' % (table, bundle, asset_path)
             else:
@@ -203,6 +257,10 @@ class AssetDumper:
     
     def extractAssetsWithKeys(self, path, table, forceDownload=False):
         try:
+            os.makedirs("temp")
+        except FileExistsError:
+            pass
+        try:
             os.makedirs(path)
         except FileExistsError:
             pass
@@ -217,19 +275,17 @@ class AssetDumper:
         )
         # Extract the data
         i=0
-        for bundle in bundles:
-            print("reading %s" % bundle)
-            if bundle.find("'"):
-                query = 'SELECT head, size, key1, key2, asset_path FROM %s WHERE pack_name = "%s"' % (table, bundle)
-            else:
-                query = "SELECT head, size, key1, key2, asset_path FROM %s WHERE pack_name = '%s'" % (table, bundle)
-            for fileData in c.execute(query).fetchall():
+        # Extraction time
+        query = "SELECT head, size, key1, key2, asset_path, pack_name FROM %s" % table
+        queryResult = c.execute(query).fetchall()
+        print("Count %i" % queryResult.__len__())
+        for fileData in queryResult:
                 try:
-                    self.packs[bundle]
+                    self.packs[fileData[5]]
                 except KeyError:
-                    self.downloadPacks([bundle], True)
+                    self.downloadPacks([fileData[5]], True)
                 print("File no. %i" % i)
-                data = self.packs[bundle][fileData[0]:fileData[0]+fileData[1]]
+                data = self.packs[fileData[5]][fileData[0]:fileData[0]+fileData[1]]
                 print("file size %i" % data.__len__())
                 decData = decrypt_stream(data, 0x3039, fileData[2], fileData[3], True)
                 print(decData[:4])
