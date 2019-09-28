@@ -52,7 +52,7 @@ class SifasApi:
     def sign(self, endpoint, data):
         endpoint = endpoint.encode("utf8")
         data_ = data.encode("utf8")
-        print(endpoint + b" " + data_)
+        # print(endpoint + b" " + data_)
         signature = hmac.new(self.sessionKey, endpoint + b" " + data_, sha1).hexdigest()
         result = '[%s,"%s"]' % (data, signature)
         return result
@@ -103,12 +103,12 @@ class SifasApi:
 
         url_ = endpoint + "?" + parse.urlencode(params)
         data = self.sign(url_, data)
-        print(data)
+        # print(data)
         response = self.s.post(url, params=params, data=data, headers=headers)
         
         if response.status_code == 200:
             rr = response.text
-            print(rr)
+            # print(rr)
             jsonData = json.loads(rr)
             self.manifestVersion = jsonData[1]
             return jsonData[3]

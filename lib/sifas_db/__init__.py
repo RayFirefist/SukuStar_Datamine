@@ -120,8 +120,13 @@ class AssetDumper:
 
     def extractInlineImages(self, forceDownload=False):
         path = self.assetsPath + "images/inline/"
+        mockPath = self.assetsPath + "images/mock_texture/"
         try:
             os.makedirs(path)
+        except FileExistsError:
+            pass
+        try:
+            os.makedirs(mockPath)
         except FileExistsError:
             pass
         mc = self.master.cursor()
@@ -139,6 +144,19 @@ class AssetDumper:
             file = open("%s%s.png" % (path, asset[0]), "wb")
             file.write(self.extractSingleAssetWithKeys(path="", table="texture", asset_path=asset[1], forceDownload=forceDownload, returnValue=True))
             file.close()
+        assets = mc.execute("SELECT id, path FROM m_texture_mock").fetchall()
+        for asset in assets:
+            tempPath = asset[0].split("/")
+            tempPath.pop()
+            try:
+                os.makedirs("%s%s" % (mockPath, "/".join(tempPath)))
+            except FileExistsError:
+                pass
+            print("elaboration inline %s" % asset[0])
+            # inline image
+            file = open("%s%s.png" % (mockPath, asset[0]), "wb")
+            file.write(self.extractSingleAssetWithKeys(path="", table="texture", asset_path=asset[1], forceDownload=forceDownload, returnValue=True))
+            file.close()
 
     def extractEmblem(self, forceDownload=False):
         path = self.assetsPath + "images/emblem/"
@@ -151,9 +169,78 @@ class AssetDumper:
         assets = mc.execute("SELECT id, emblem_asset_path FROM m_emblem").fetchall()
         for asset in assets:
             print("elaboration emblem %i" % asset[0])
-            # inline image
+            # image
             file = open("%stex_emblem_%i.jpg" % (path, asset[0]), "wb")
             file.write(self.extractSingleAssetWithKeys(path="", table="texture", asset_path=asset[1], forceDownload=forceDownload, returnValue=True))
+            file.close()
+
+    def extractTrainingMaterial(self, forceDownload=False):
+        path = self.assetsPath + "images/training_material/"
+        try:
+            os.makedirs(path)
+        except FileExistsError:
+            pass
+        mc = self.master.cursor()
+        ac = self.assets.cursor()
+        assets = mc.execute("SELECT id, image_asset_path FROM m_training_material").fetchall()
+        for asset in assets:
+            print("elaboration training material %i" % asset[0])
+            # image
+            file = open("%stex_training_material_%i.jpg" % (path, asset[0]), "wb")
+            file.write(self.extractSingleAssetWithKeys(path="", table="texture", asset_path=asset[1], forceDownload=forceDownload, returnValue=True))
+            file.close()
+
+    def extractMemberInfo(self, forceDownload=False):
+        path = self.assetsPath + "images/member/"
+        try:
+            os.makedirs(path)
+        except FileExistsError:
+            pass
+        mc = self.master.cursor()
+        ac = self.assets.cursor()
+        assets = mc.execute("SELECT id, standing_image_asset_path, autograph_image_asset_path, member_icon_image_asset_path, thumbnail_image_asset_path FROM m_member").fetchall()
+        for asset in assets:
+            print("elaboration member %i" % asset[0])
+            # standing image
+            file = open("%stex_member_standing_%i.jpg" % (path, asset[0]), "wb")
+            file.write(self.extractSingleAssetWithKeys(path="", table="texture", asset_path=asset[1], forceDownload=forceDownload, returnValue=True))
+            file.close()
+            # autograph image
+            file = open("%stex_member_autograph_%i.jpg" % (path, asset[0]), "wb")
+            file.write(self.extractSingleAssetWithKeys(path="", table="texture", asset_path=asset[2], forceDownload=forceDownload, returnValue=True))
+            file.close()
+            # member_icon image
+            file = open("%stex_member_icon_%i.jpg" % (path, asset[0]), "wb")
+            file.write(self.extractSingleAssetWithKeys(path="", table="texture", asset_path=asset[3], forceDownload=forceDownload, returnValue=True))
+            file.close()
+            # thumb image
+            file = open("%stex_member_thumbnail_%i.jpg" % (path, asset[0]), "wb")
+            file.write(self.extractSingleAssetWithKeys(path="", table="texture", asset_path=asset[4], forceDownload=forceDownload, returnValue=True))
+            file.close()
+
+    def extractSuit(self, forceDownload=True):
+        imagePath = self.assetsPath + "images/suit/"
+        modelPath = self.assetsPath + "models/suit/"
+        try:
+            os.makedirs(imagePath)
+        except FileExistsError:
+            pass
+        try:
+            os.makedirs(modelPath)
+        except FileExistsError:
+            pass
+        mc = self.master.cursor()
+        ac = self.assets.cursor()
+        assets = mc.execute("SELECT id, thumbnail_image_asset_path, model_asset_path FROM m_suit").fetchall()
+        for asset in assets:
+            print("elaboration member %i" % asset[0])
+            # thumbnail image
+            file = open("%stex_suit_thumbnail_%i.jpg" % (imagePath, asset[0]), "wb")
+            file.write(self.extractSingleAssetWithKeys(path="", table="texture", asset_path=asset[1], forceDownload=forceDownload, returnValue=True))
+            file.close()
+            # suit model
+            file = open("%ssuit_%i.unity3d" % (modelPath, asset[0]), "wb")
+            file.write(self.extractSingleAssetWithKeys(path="", table="member_model", asset_path=asset[2], forceDownload=forceDownload, returnValue=True))
             file.close()
 
     def extractAccessory(self, forceDownload=False):
@@ -184,8 +271,9 @@ class AssetDumper:
     def extractStage(self):
         self.extractAssetsWithKeys("%s/models/stage/" % self.assetsPath, "stage")
 
-    def extractMemberModels(self):
-        self.extractAssetsWithKeys("%s/models/member/" % self.assetsPath, "member_model")
+    # deprecated
+    #def extractMemberModels(self):
+    #    self.extractAssetsWithKeys("%s/models/member/" % self.assetsPath, "member_model")
     
     def extractMemberSdModels(self):
         self.extractAssetsWithKeys("%s/sd_models/member/" % self.assetsPath, "member_sd_model")
@@ -245,7 +333,6 @@ class AssetDumper:
                     self.packs[bundle]
                 except KeyError:
                     self.downloadPacks([bundle], True)
-                print("%i.png" % i)
                 data = self.packs[bundle][fileData[0]:fileData[0]+fileData[1]]
                 print("file size %i" % data.__len__())
                 data = decrypt_stream(data, 0x3039, fileData[2], fileData[3], True)
