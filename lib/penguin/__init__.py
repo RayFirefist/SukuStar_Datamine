@@ -94,7 +94,7 @@ def masterDataRead(file:FileStream):
     lang = file.readString()
     rows = file.readInt()
 
-    print(hash, lang, rows)
+    # print(hash, lang, rows)
 
     out = []
     for x in range(0, rows):

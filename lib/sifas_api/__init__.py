@@ -149,7 +149,6 @@ class SifasApi:
             "resemara_detection_identifier": "",
             "time_difference": 32400
         })
-        print(r)
         self.uid = r['user_id']
         self.authorizationKey = r['authorization_key']
         auth_key = base64.b64decode(self.authorizationKey)
@@ -184,6 +183,7 @@ class SifasApi:
         #self.updateFile()
         self.sessionKey = self.xor(rnd, base64.b64decode(r['session_key']))
         self.termsAgreement()
+        print("Login success")
 
     # agree ToS
     def termsAgreement(self):
@@ -207,7 +207,10 @@ class SifasApi:
         if dbsList is None:
             dbsList = self.getDbList()
         for database in dbsList:
+            print("Obtaining %s" % database['db_name'])
             baseFile = self.retreive("/static/%s/%s" % (self.manifestVersion, database['db_name']))
             decrypted = decrypt_stream(baseFile, database['db_keys_list'][0], database['db_keys_list'][1], database['db_keys_list'][2])
             deflated = zlib.decompress(decrypted, -zlib.MAX_WBITS)
             open("./assets/db/%s" % database['db_name'], "wb").write(deflated)
+        print("Version %s" % self.manifestVersion)
+        open("./assets/db/version", "w").write(self.manifestVersion)

@@ -234,6 +234,8 @@ class AssetDumper:
         assets = mc.execute("SELECT id, thumbnail_image_asset_path, model_asset_path FROM m_suit").fetchall()
         for asset in assets:
             print("elaboration member %i" % asset[0])
+            depIndex = 1
+            shaderIndex = 1
             # thumbnail image
             file = open("%stex_suit_thumbnail_%i.jpg" % (imagePath, asset[0]), "wb")
             file.write(self.extractSingleAssetWithKeys(path="", table="texture", asset_path=asset[1], forceDownload=forceDownload, returnValue=True))
@@ -242,6 +244,22 @@ class AssetDumper:
             file = open("%ssuit_%i.unity3d" % (modelPath, asset[0]), "wb")
             file.write(self.extractSingleAssetWithKeys(path="", table="member_model", asset_path=asset[2], forceDownload=forceDownload, returnValue=True))
             file.close()
+            # dependencies of model
+            query = "SELECT dependency FROM member_model_dependency WHERE asset_path = \"%s\"" % asset[2].replace('"', '""')
+            print(query)
+            for dependence in ac.execute(query):
+                file = open("%ssuit_dependency_%i_%i.unity3d" % (modelPath, asset[0], depIndex), "wb")
+                file.write(self.extractSingleAssetWithKeys(path="", table="shader" if dependence[0] == "§M|" else "member_model", asset_path=dependence[0], forceDownload=forceDownload, returnValue=True))
+                file.close
+                if dependence[0] == "§M|":
+                    query = "SELECT dependency FROM member_model_dependency WHERE asset_path = \"§M|\""
+                    for shaderDependence in ac.execute(query):
+                        file = open("%ssuit_shader_dependency_%i_%i.unity3d" % (modelPath, asset[0], shaderIndex), "wb")
+                        file.write(self.extractSingleAssetWithKeys(path="", table="member_model", asset_path=shaderDependence[0], forceDownload=forceDownload, returnValue=True))
+                        file.close()
+                        shaderDependence += 1
+                depIndex += 1
+
 
     def extractAccessory(self, forceDownload=False):
         path = self.assetsPath + "images/accessory/"
@@ -332,7 +350,7 @@ class AssetDumper:
                 try:
                     self.packs[bundle]
                 except KeyError:
-                    self.downloadPacks([bundle], True)
+                    self.downloadPacks([bundle], False)
                 data = self.packs[bundle][fileData[0]:fileData[0]+fileData[1]]
                 print("file size %i" % data.__len__())
                 data = decrypt_stream(data, 0x3039, fileData[2], fileData[3], True)

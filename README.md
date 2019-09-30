@@ -48,6 +48,7 @@ from lib.sifas_db import AssetDumper
 
 assetDumper = AssetDumper(api) # you must provide a SifasApi instance here. You can provide None but expect errors since it can't reach server for downloading the necessary files
 assetDumper.extractStillIllus() # extract still illustrations
+assetDumper.extractInlineImages() # extract ui images like login bonus, event/gacha banner, tutorial etc
 assetDumper.extractCardsAsset() # extract cards images (full, icon)
 assetDumper.extractEmblem() # extract titles
 assetDumper.extractTrainingMaterial() # extract training materials thumbnails
