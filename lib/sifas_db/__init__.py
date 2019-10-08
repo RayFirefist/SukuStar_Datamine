@@ -12,7 +12,7 @@ from lib.sifas_api.endpoints import SifasEndpoints
 # Decrypt
 from lib.penguin import decrypt_stream
 # Unity
-from lib.unity import UnityAssetBundle
+# from lib.unity import UnityAssetBundle
 # Base64
 import base64
 
@@ -295,6 +295,11 @@ class AssetDumper:
     # deprecated
     #def extractMemberModels(self):
     #    self.extractAssetsWithKeys("%s/models/member/" % self.assetsPath, "member_model")
+
+    def extractTimeline(self):
+        self.extractAssetsWithKeys("%s/bundles/timeline/navi/" % self.assetsPath, "navi_timeline")
+        self.extractAssetsWithKeys("%s/bundles/timeline/live/" % self.assetsPath, "live_timeline")
+        self.extractAssetsWithKeys("%s/bundles/timeline/skill/" % self.assetsPath, "skill_timeline")
     
     def extractMemberSdModels(self):
         self.extractAssetsWithKeys("%s/sd_models/member/" % self.assetsPath, "member_sd_model")
@@ -405,11 +410,12 @@ class AssetDumper:
                     except FileExistsError:
                         pass
                     try:
-                        unityBundle = UnityAssetBundle(path)
-                        unityBundle.setBundleByPath("temp/tempUnity")
-                        unityBundle.extractAssets()
-                        i+=1
-                        continue
+                        #unityBundle = UnityAssetBundle(path)
+                        #unityBundle.setBundleByPath("temp/tempUnity")
+                        #unityBundle.extractAssets()
+                        #i+=1
+                        #continue
+                        raise Exception
                     except Exception:
                         pass
                     
