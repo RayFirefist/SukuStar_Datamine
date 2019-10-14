@@ -15,6 +15,8 @@ from lib.penguin import decrypt_stream
 # from lib.unity import UnityAssetBundle
 # Base64
 import base64
+# Criware Lib
+from lib.hca import AcbCriware
 
 class AssetDumper:
 
@@ -263,7 +265,6 @@ class AssetDumper:
                         shaderIndex += 1
                 depIndex += 1
 
-
     def extractAccessory(self, forceDownload=False):
         path = self.assetsPath + "images/accessory/"
         try:
@@ -279,6 +280,67 @@ class AssetDumper:
             file = open("%stex_accessory_%i.jpg" % (path, asset[0]), "wb")
             file.write(self.extractSingleAssetWithKeys(path="", table="texture", asset_path=asset[1], forceDownload=forceDownload, returnValue=True))
             file.close()
+    
+    def extractAudio(self, forceDownload=False):
+        path = self.assetsPath + "sound/"
+        try:
+            os.makedirs(path)
+        except FileExistsError:
+            pass
+        ac = self.assets.cursor()
+        assets = ac.execute("SELECT sheet_name, acb_pack_name FROM m_asset_sound").fetchall()
+        for asset in assets:
+            print("elaboration acb %s" % asset[0])
+            self.downloadPacks([asset[1]], forceDownload)
+            tempPath = "%s%s/" % (path, asset[0])
+            try:
+                os.makedirs(tempPath)
+            except FileExistsError:
+                pass
+            tempAcb = AcbCriware(self.packs[asset[1]], tempPath, asset[0])
+            tempAcb.processContents()
+
+    def extractAdvScript(self, forceDownload=False):
+        path = self.assetsPath + "adv/script/"
+        try:
+            os.makedirs(path)
+        except FileExistsError:
+            pass
+        mc = self.master.cursor()
+        ac = self.assets.cursor()
+        assets = ac.execute("SELECT asset_path, pack_name FROM adv_script").fetchall()
+        for asset in assets:
+            print("elaboration script %s" % asset[0])
+            # inline image
+            try:
+                tempPath = asset[0].split("/")
+                tempPath.pop()
+                os.makedirs(path + "/".join(tempPath))
+            except FileExistsError:
+                pass
+            file = open("%s/%s.bin" % (path, asset[0]), "wb")
+            file.write(self.extractSingleAssetWithKeys(path="", table="adv_script", asset_path=asset[0], forceDownload=forceDownload, returnValue=True))
+            file.close()
+
+    def extractAdvGraphics(self, forceDownload=False):
+        path = self.assetsPath + "adv/graphics/"
+        try:
+            os.makedirs(path)
+        except FileExistsError:
+            pass
+        mc = self.master.cursor()
+        ac = self.assets.cursor()
+        assets = ac.execute("SELECT script_name, idx, resource FROM adv_graphic").fetchall()
+        for asset in assets:
+            print("elaboration graphic %s" % asset[0])
+            # inline image
+            try:
+                os.makedirs(path + asset[0])
+            except FileExistsError:
+                pass
+            file = open("%s%s/%i.png" % (path, asset[0], asset[1]), "wb")
+            file.write(self.extractSingleAssetWithKeys(path="", table="texture", asset_path=asset[2], forceDownload=forceDownload, returnValue=True))
+            file.close()
 
     def extractBackground(self):
         self.extractAssetsWithKeys("%s/images/background/" % self.assetsPath, "background")
@@ -291,6 +353,9 @@ class AssetDumper:
 
     def extractStage(self):
         self.extractAssetsWithKeys("%s/models/stage/" % self.assetsPath, "stage")
+    
+    def extractStageEffect(self):
+        self.extractAssetsWithKeys("%s/models/stage_effect/" % self.assetsPath, "stage_effect")
 
     # deprecated
     #def extractMemberModels(self):

@@ -1,3 +1,4 @@
 #unitypack
 cryptography
 requests
+git+https://github.com/CrescentApricot/hcapy.git
