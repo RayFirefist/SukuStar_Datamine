@@ -1,9 +1,9 @@
-# CRIWARE CLASS
+# CRIWARE HCA/ACB library
 
 import os
 import io
 
-import hca.acb as acb # Thanks Triangle
+import lib.hca.acb as acb # Thanks Triangle
 import hcapy
 
 # HCA Heys
