@@ -16,7 +16,7 @@ from lib.penguin import decrypt_stream
 # Base64
 import base64
 # Criware Lib
-from lib.hca import AcbCriware
+from lib.criware import AcbCriware
 
 class AssetDumper:
 
