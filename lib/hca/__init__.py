@@ -3,7 +3,7 @@
 import os
 import io
 
-import lib.hca.acb as acb # Thanks Triangle
+import acb as acb # Thanks Triangle
 import hcapy
 
 # HCA Heys
