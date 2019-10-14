@@ -16,7 +16,7 @@ from lib.penguin import decrypt_stream
 # Base64
 import base64
 # Criware Lib
-from lib.criware import AcbCriware
+# from lib.criware import AcbCriware
 
 class AssetDumper:
 
@@ -297,8 +297,8 @@ class AssetDumper:
                 os.makedirs(tempPath)
             except FileExistsError:
                 pass
-            tempAcb = AcbCriware(self.packs[asset[1]], tempPath, asset[0])
-            tempAcb.processContents()
+            #tempAcb = AcbCriware(self.packs[asset[1]], tempPath, asset[0])
+            #tempAcb.processContents()
 
     def extractAdvScript(self, forceDownload=False):
         path = self.assetsPath + "adv/script/"
