@@ -10,7 +10,7 @@ Name reference: Blazblue Cross Tag Battle's quote: "Can't escape from crossing f
 
 ### Install
 
-* Install the dependencies with `pip install -r requirements` or, if you have Windows, run `install_dependencies.bat`
+* Install the dependencies with `install_dependencies.sh` if you have a UNIX environment (like Ubuntu or macOS) or, if you have Windows, run `install_dependencies.bat`
 * Run on cmd/bash/zsh `pip install --no-binary unitypack unitypack` for installing unity assets extraction library
 
 ### Sample commands
@@ -72,3 +72,10 @@ assetDumper.extractAdvGraphics() # extract scenario graphics (like sprites)
 - [ ] (WIP) assets naming
 - [ ] extract correctly unity files
 - [ ] extract and deal with audio
+
+# Credits
+
+* [esterTion](https://github.com/esterTion) for assets decryptor base script
+* CPPO for HCA key
+* [Triangle](https://github.com/summertriangle-dev) for acb.py lib
+* [CrescentApricot](https://github.com/CrescentApricot/hcapy) for hcapy
