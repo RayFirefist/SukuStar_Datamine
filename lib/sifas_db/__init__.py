@@ -32,6 +32,12 @@ class AssetDumper:
             pass
         pass
 
+    def mkdir(self, path):
+        try:
+            os.makedirs(path)
+        except FileExistsError:
+            pass
+
     def downloadPacks(self, packs:list, forceDownload: bool = False):
         i = 0
 
@@ -356,6 +362,58 @@ class AssetDumper:
     
     def extractStageEffect(self):
         self.extractAssetsWithKeys("%s/models/stage_effect/" % self.assetsPath, "stage_effect")
+
+    def extractLessonAnimation(self, forceDownload=False):
+        path = self.assetsPath + "bundles/lesson/normal/"
+        self.mkdir(path)
+        mc = self.master.cursor()
+        ac = self.assets.cursor()
+        lessonData = mc.execute("SELECT * FROM m_lesson_animation")
+        for lessonEntry in lessonData:
+            print("Obtaining lesson bundle %i %i" % (lessonEntry[0], lessonEntry[1]))
+            self.mkdir("%s%i/" % (path, lessonEntry[0]))
+            file = open("%s%i/%i_normal_emotion.unity3d" % (path, lessonEntry[0], lessonEntry[1]), "wb")
+            file.write(self.extractSingleAssetWithKeys(path="", table="member_sd_model", asset_path=lessonEntry[2], forceDownload=forceDownload, returnValue=True))
+            file.close()
+            file = open("%s%i/%i_flash_emotion.unity3d" % (path, lessonEntry[0], lessonEntry[1]), "wb")
+            file.write(self.extractSingleAssetWithKeys(path="", table="member_sd_model", asset_path=lessonEntry[3], forceDownload=forceDownload, returnValue=True))
+            file.close()
+            file = open("%s%i/%i_special_flash_emotion.unity3d" % (path, lessonEntry[0], lessonEntry[1]), "wb")
+            file.write(self.extractSingleAssetWithKeys(path="", table="member_sd_model", asset_path=lessonEntry[4], forceDownload=forceDownload, returnValue=True))
+            file.close()
+            file = open("%s%i/%i_rank_up_emotion.unity3d" % (path, lessonEntry[0], lessonEntry[1]), "wb")
+            file.write(self.extractSingleAssetWithKeys(path="", table="member_sd_model", asset_path=lessonEntry[5], forceDownload=forceDownload, returnValue=True))
+            file.close()
+            file = open("%s%i/%i_special_rank_up_emotion.unity3d" % (path, lessonEntry[0], lessonEntry[1]), "wb")
+            file.write(self.extractSingleAssetWithKeys(path="", table="member_sd_model", asset_path=lessonEntry[6], forceDownload=forceDownload, returnValue=True))
+            file.close()
+        path = self.assetsPath + "bundles/lesson/finish/"
+        self.mkdir(path)
+        lessonData = mc.execute("SELECT * FROM m_lesson_animation_finish")
+        for lessonEntry in lessonData:
+            print("obtaining lesson finish bundle %i" % lessonEntry[0])
+            file = open("%s%i_running_emotion_asset_path.unity3d" % (path, lessonEntry[0]), "wb")
+            file.write(self.extractSingleAssetWithKeys(path="", table="member_sd_model", asset_path=lessonEntry[1], forceDownload=forceDownload, returnValue=True))
+            file.close()
+            file = open("%s%i_exhaust_emotion_asset_path.unity3d" % (path, lessonEntry[0]), "wb")
+            file.write(self.extractSingleAssetWithKeys(path="", table="member_sd_model", asset_path=lessonEntry[2], forceDownload=forceDownload, returnValue=True))
+            file.close()
+            file = open("%s%i_normal_emotion_asset_path.unity3d" % (path, lessonEntry[0]), "wb")
+            file.write(self.extractSingleAssetWithKeys(path="", table="member_sd_model", asset_path=lessonEntry[3], forceDownload=forceDownload, returnValue=True))
+            file.close()
+            file = open("%s%i_happy_emotion_asset_path.unity3d" % (path, lessonEntry[0]), "wb")
+            file.write(self.extractSingleAssetWithKeys(path="", table="member_sd_model", asset_path=lessonEntry[4], forceDownload=forceDownload, returnValue=True))
+            file.close()
+            file = open("%s%i_happy_flash_emotion_asset_path.unity3d" % (path, lessonEntry[0]), "wb")
+            file.write(self.extractSingleAssetWithKeys(path="", table="member_sd_model", asset_path=lessonEntry[5], forceDownload=forceDownload, returnValue=True))
+            file.close()
+            file = open("%s%i_happy_emotion_rank_up_asset_path.unity3d" % (path, lessonEntry[0]), "wb")
+            file.write(self.extractSingleAssetWithKeys(path="", table="member_sd_model", asset_path=lessonEntry[6], forceDownload=forceDownload, returnValue=True))
+            file.close()
+            file = open("%s%i_happy_flash_emotion_rank_up_asset_path.unity3d" % (path, lessonEntry[0]), "wb")
+            file.write(self.extractSingleAssetWithKeys(path="", table="member_sd_model", asset_path=lessonEntry[7], forceDownload=forceDownload, returnValue=True))
+            file.close()
+        pass
 
     # deprecated
     #def extractMemberModels(self):

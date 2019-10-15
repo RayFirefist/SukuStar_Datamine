@@ -58,6 +58,7 @@ assetDumper.extractAccessory() # extract accessory thumbnails
 assetDumper.extractAudio() # extract audio into WAV file
 assetDumper.extractAdvScript() # extract scenario script
 assetDumper.extractAdvGraphics() # extract scenario graphics (like sprites)
+assetDumper.extractLessonAnimation() # extract lesson animation bundles (unity3d bundles)
 ```
 
 ## TODO LIST
