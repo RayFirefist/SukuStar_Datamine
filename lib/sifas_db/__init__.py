@@ -83,10 +83,7 @@ class AssetDumper:
 
     def extractCardsAssets(self, forceDownload=False):
         path = self.assetsPath + "images/cards/"
-        try:
-            os.makedirs(path)
-        except FileExistsError:
-            pass
+        self.mkdir(path)
         mc = self.master.cursor()
         ac = self.assets.cursor()
         assets = mc.execute("SELECT card_m_id, appearance_type, image_asset_path, thumbnail_asset_path, still_thumbnail_asset_path, background_asset_path FROM m_card_appearance").fetchall()
@@ -112,10 +109,7 @@ class AssetDumper:
 
     def extractStillIllus(self, forceDownload=False):
         path = self.assetsPath + "images/still/"
-        try:
-            os.makedirs(path)
-        except FileExistsError:
-            pass
+        self.mkdir(path)
         mc = self.master.cursor()
         ac = self.assets.cursor()
         assets = mc.execute("SELECT still_master_id, display_order, still_asset_path FROM m_still_texture").fetchall()
@@ -129,24 +123,15 @@ class AssetDumper:
     def extractInlineImages(self, forceDownload=False):
         path = self.assetsPath + "images/inline/"
         mockPath = self.assetsPath + "images/mock_texture/"
-        try:
-            os.makedirs(path)
-        except FileExistsError:
-            pass
-        try:
-            os.makedirs(mockPath)
-        except FileExistsError:
-            pass
+        self.mkdir(path)
+        self.mkdir(mockPath)
         mc = self.master.cursor()
         ac = self.assets.cursor()
         assets = mc.execute("SELECT id, path FROM m_inline_image").fetchall()
         for asset in assets:
             tempPath = asset[0].split("/")
             tempPath.pop()
-            try:
-                os.makedirs("%s%s" % (path, "/".join(tempPath)))
-            except FileExistsError:
-                pass
+            self.mkdir("%s%s" % (path, "/".join(tempPath)))
             print("elaboration inline %s" % asset[0])
             # inline image
             file = open("%s%s.png" % (path, asset[0]), "wb")
@@ -156,10 +141,7 @@ class AssetDumper:
         for asset in assets:
             tempPath = asset[0].split("/")
             tempPath.pop()
-            try:
-                os.makedirs("%s%s" % (mockPath, "/".join(tempPath)))
-            except FileExistsError:
-                pass
+            self.mkdir("%s%s" % (mockPath, "/".join(tempPath)))
             print("elaboration inline %s" % asset[0])
             # inline image
             file = open("%s%s.png" % (mockPath, asset[0]), "wb")
@@ -168,10 +150,7 @@ class AssetDumper:
 
     def extractEmblem(self, forceDownload=False):
         path = self.assetsPath + "images/emblem/"
-        try:
-            os.makedirs(path)
-        except FileExistsError:
-            pass
+        self.mkdir(path)
         mc = self.master.cursor()
         ac = self.assets.cursor()
         assets = mc.execute("SELECT id, emblem_asset_path FROM m_emblem").fetchall()
@@ -184,10 +163,7 @@ class AssetDumper:
 
     def extractTrainingMaterial(self, forceDownload=False):
         path = self.assetsPath + "images/training_material/"
-        try:
-            os.makedirs(path)
-        except FileExistsError:
-            pass
+        self.mkdir(path)
         mc = self.master.cursor()
         ac = self.assets.cursor()
         assets = mc.execute("SELECT id, image_asset_path FROM m_training_material").fetchall()
@@ -200,10 +176,7 @@ class AssetDumper:
 
     def extractMemberInfo(self, forceDownload=False):
         path = self.assetsPath + "images/member/"
-        try:
-            os.makedirs(path)
-        except FileExistsError:
-            pass
+        self.mkdir(path)
         mc = self.master.cursor()
         ac = self.assets.cursor()
         assets = mc.execute("SELECT id, standing_image_asset_path, autograph_image_asset_path, member_icon_image_asset_path, thumbnail_image_asset_path FROM m_member").fetchall()
@@ -229,14 +202,8 @@ class AssetDumper:
     def extractSuit(self, extractModels:bool=True, forceDownload=True):
         imagePath = self.assetsPath + "images/suit/"
         modelPath = self.assetsPath + "models/suit/"
-        try:
-            os.makedirs(imagePath)
-        except FileExistsError:
-            pass
-        try:
-            os.makedirs(modelPath)
-        except FileExistsError:
-            pass
+        self.mkdir(imagePath)
+        self.mkdir(modelPath)
         mc = self.master.cursor()
         ac = self.assets.cursor()
         assets = mc.execute("SELECT id, thumbnail_image_asset_path, model_asset_path FROM m_suit").fetchall()
@@ -273,10 +240,7 @@ class AssetDumper:
 
     def extractAccessory(self, forceDownload=False):
         path = self.assetsPath + "images/accessory/"
-        try:
-            os.makedirs(path)
-        except FileExistsError:
-            pass
+        self.mkdir(path)
         mc = self.master.cursor()
         ac = self.assets.cursor()
         assets = mc.execute("SELECT id, thumbnail_asset_path FROM m_accessory").fetchall()
@@ -289,61 +253,43 @@ class AssetDumper:
     
     def extractAudio(self, forceDownload=False):
         path = self.assetsPath + "sound/"
-        try:
-            os.makedirs(path)
-        except FileExistsError:
-            pass
+        self.mkdir(path)
         ac = self.assets.cursor()
         assets = ac.execute("SELECT sheet_name, acb_pack_name FROM m_asset_sound").fetchall()
         for asset in assets:
             print("elaboration acb %s" % asset[0])
             self.downloadPacks([asset[1]], forceDownload)
             tempPath = "%s%s/" % (path, asset[0])
-            try:
-                os.makedirs(tempPath)
-            except FileExistsError:
-                pass
+            self.mkdir(tempPath)
             #tempAcb = AcbCriware(self.packs[asset[1]], tempPath, asset[0])
             #tempAcb.processContents()
 
     def extractAdvScript(self, forceDownload=False):
         path = self.assetsPath + "adv/script/"
-        try:
-            os.makedirs(path)
-        except FileExistsError:
-            pass
+        self.mkdir(path)
         mc = self.master.cursor()
         ac = self.assets.cursor()
         assets = ac.execute("SELECT asset_path, pack_name FROM adv_script").fetchall()
         for asset in assets:
             print("elaboration script %s" % asset[0])
             # inline image
-            try:
-                tempPath = asset[0].split("/")
-                tempPath.pop()
-                os.makedirs(path + "/".join(tempPath))
-            except FileExistsError:
-                pass
+            tempPath = asset[0].split("/")
+            tempPath.pop()
+            self.mkdir(path + "/".join(tempPath))
             file = open("%s/%s.bin" % (path, asset[0]), "wb")
             file.write(self.extractSingleAssetWithKeys(path="", table="adv_script", asset_path=asset[0], forceDownload=forceDownload, returnValue=True))
             file.close()
 
     def extractAdvGraphics(self, forceDownload=False):
         path = self.assetsPath + "adv/graphics/"
-        try:
-            os.makedirs(path)
-        except FileExistsError:
-            pass
+        self.mkdir(path)
         mc = self.master.cursor()
         ac = self.assets.cursor()
         assets = ac.execute("SELECT script_name, idx, resource FROM adv_graphic").fetchall()
         for asset in assets:
             print("elaboration graphic %s" % asset[0])
             # inline image
-            try:
-                os.makedirs(path + asset[0])
-            except FileExistsError:
-                pass
+            self.mkdir(path + asset[0])
             file = open("%s%s/%i.png" % (path, asset[0], asset[1]), "wb")
             file.write(self.extractSingleAssetWithKeys(path="", table="texture", asset_path=asset[2], forceDownload=forceDownload, returnValue=True))
             file.close()
@@ -362,6 +308,23 @@ class AssetDumper:
     
     def extractStageEffect(self):
         self.extractAssetsWithKeys("%s/models/stage_effect/" % self.assetsPath, "stage_effect")
+
+    def extractMusicJackets(self, forceDownload=False):
+        path = "%s/images/live/" % self.assetsPath
+        self.mkdir(path)
+        self.mkdir(path + "jacket")
+        self.mkdir(path + "background")
+        mc = self.master.cursor()
+        musicData = mc.execute("SELECT music_id, jacket_asset_path, background_asset_path FROM m_live")
+        for music in musicData:
+            print("Elaborating music %i" % music[0])
+            file = open("%sjacket/%i.jpg" % (path, music[0]), "wb")
+            file.write(self.extractSingleAssetWithKeys(path="", table="texture", asset_path=music[1], forceDownload=forceDownload, returnValue=True))
+            file.close()
+            file = open("%sbackground/%i.jpg" % (path, music[0]), "wb")
+            file.write(self.extractSingleAssetWithKeys(path="", table="texture", asset_path=music[2], forceDownload=forceDownload, returnValue=True))
+            file.close()
+        pass
 
     def extractLessonAnimation(self, forceDownload=False):
         path = self.assetsPath + "bundles/lesson/normal/"
@@ -432,10 +395,7 @@ class AssetDumper:
 
     def extractSingleAssetWithKeys(self, path, table, asset_path, forceDownload=False, returnValue=False):
         if path != "":
-            try:
-                os.makedirs(path)
-            except FileExistsError:
-                pass
+            self.mkdir(path)
         c = self.assets.cursor()
         bundles = []
         if asset_path.find("'") > -1:
@@ -492,14 +452,8 @@ class AssetDumper:
                 i+=1
     
     def extractAssetsWithKeys(self, path, table, forceDownload=False):
-        try:
-            os.makedirs("temp")
-        except FileExistsError:
-            pass
-        try:
-            os.makedirs(path)
-        except FileExistsError:
-            pass
+        self.mkdir("temp")
+        self.mkdir(path)
         c = self.assets.cursor()
         bundles = []
         for bundle in c.execute("SELECT pack_name FROM %s" % table).fetchall():
@@ -528,10 +482,7 @@ class AssetDumper:
                 if decData[:4] == b'Unit':
                     fileExt = "unity3d"
                     open("temp/tempUnity", "wb").write(decData)
-                    try:
-                        os.makedirs(path)
-                    except FileExistsError:
-                        pass
+                    self.mkdir(path)
                     try:
                         #unityBundle = UnityAssetBundle(path)
                         #unityBundle.setBundleByPath("temp/tempUnity")
