@@ -400,17 +400,17 @@ class AssetDumper:
         bundles = []
         if asset_path.find("'") > -1:
             if asset_path.find('"') > -1:
-                print("1")
+                #print("1")
                 query = "SELECT pack_name FROM %s WHERE asset_path = \"%s\"" % (table, asset_path.replace("\"", '""'))
             else:
-                print("1b")
+                #print("1b")
                 query = 'SELECT pack_name FROM %s WHERE asset_path = "%s"' % (table, asset_path)
         else:
             if asset_path.find('"') > -1:
-                print("2")
+                #print("2")
                 query = "SELECT pack_name FROM %s WHERE asset_path = '%s'" % (table, asset_path)
             else:
-                print("2b")
+                #print("2b")
                 query = "SELECT pack_name FROM %s WHERE asset_path = \"%s\"" % (table, asset_path)
         print(query)
         for bundle in c.execute(query).fetchall():
