@@ -37,3 +37,6 @@ assets*
 
 # scripts for test
 *mainE*
+
+# HTML
+*.html
