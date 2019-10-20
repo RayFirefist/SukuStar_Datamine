@@ -38,6 +38,12 @@ class AssetDumper:
         except FileExistsError:
             pass
 
+    def writeDataInsideFile(self, path, binary):
+        file = open(path, "wb")
+        file.write(binary)
+        file.close()
+        pass
+
     def downloadPacks(self, packs:list, forceDownload: bool = False):
         i = 0
 
@@ -91,9 +97,7 @@ class AssetDumper:
             print("elaboration card %i" % asset[0])
             isAwaken = "awaken" if asset[1] == 2 else "normal"
             # card illustration
-            file = open("%stex_card_%i_%s.jpg" % (path, asset[0], isAwaken), "wb")
-            file.write(self.extractSingleAssetWithKeys(path="", table="texture", asset_path=asset[2], forceDownload=forceDownload, returnValue=True))
-            file.close()
+            self.writeDataInsideFile("%stex_card_%i_%s.jpg" % (path, asset[0], isAwaken), self.extractSingleAssetWithKeys(path="", table="texture", asset_path=asset[2], forceDownload=forceDownload, returnValue=True))
             # thumb illustration
             file = open("%stex_thumb_%i_%s.jpg" % (path, asset[0], isAwaken), "wb")
             file.write(self.extractSingleAssetWithKeys(path="", table="texture", asset_path=asset[3], forceDownload=forceDownload, returnValue=True))
@@ -119,6 +123,13 @@ class AssetDumper:
             file = open("%stex_still_%i_%i.jpg" % (path, asset[0], asset[1]), "wb")
             file.write(self.extractSingleAssetWithKeys(path="", table="texture", asset_path=asset[2], forceDownload=forceDownload, returnValue=True))
             file.close()
+        assets = mc.execute("SELECT still_master_id, thumbnail_asset_path FROM m_still").fetchall()
+        for asset in assets:
+            print("elaboration thumb still %i" % asset[0])
+            # still illus
+            file = open("%stex_thumb_still_%i.png" % (path, asset[0]), "wb")
+            file.write(self.extractSingleAssetWithKeys(path="", table="texture", asset_path=asset[1], forceDownload=forceDownload, returnValue=True))
+            file.close()
 
     def extractInlineImages(self, forceDownload=False):
         path = self.assetsPath + "images/inline/"
@@ -133,6 +144,16 @@ class AssetDumper:
             tempPath.pop()
             self.mkdir("%s%s" % (path, "/".join(tempPath)))
             print("elaboration inline %s" % asset[0])
+            # inline image
+            file = open("%s%s.png" % (path, asset[0]), "wb")
+            file.write(self.extractSingleAssetWithKeys(path="", table="texture", asset_path=asset[1], forceDownload=forceDownload, returnValue=True))
+            file.close()
+        assets = mc.execute("SELECT id, path FROM m_decoration_texture").fetchall()
+        for asset in assets:
+            tempPath = asset[0].split("/")
+            tempPath.pop()
+            self.mkdir("%s%s" % (path, "/".join(tempPath)))
+            print("elaboration decoration inline %s" % asset[0])
             # inline image
             file = open("%s%s.png" % (path, asset[0]), "wb")
             file.write(self.extractSingleAssetWithKeys(path="", table="texture", asset_path=asset[1], forceDownload=forceDownload, returnValue=True))
