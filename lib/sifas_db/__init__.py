@@ -220,7 +220,7 @@ class AssetDumper:
             file.write(self.extractSingleAssetWithKeys(path="", table="texture", asset_path=asset[4], forceDownload=forceDownload, returnValue=True))
             file.close()
 
-    def extractSuit(self, extractModels:bool=True, forceDownload=True):
+    def extractSuit(self, extractModels:bool=False, extractThumbs:bool=True, forceDownload=False):
         imagePath = self.assetsPath + "images/suit/"
         modelPath = self.assetsPath + "models/suit/"
         self.mkdir(imagePath)
@@ -233,16 +233,18 @@ class AssetDumper:
             depIndex = 1
             shaderIndex = 1
             # thumbnail image
-            file = open("%stex_suit_thumbnail_%i.jpg" % (imagePath, asset[0]), "wb")
-            file.write(self.extractSingleAssetWithKeys(path="", table="texture", asset_path=asset[1], forceDownload=forceDownload, returnValue=True))
-            file.close()
+            if extractThumbs:
+                file = open("%stex_suit_thumbnail_%i.jpg" % (imagePath, asset[0]), "wb")
+                file.write(self.extractSingleAssetWithKeys(path="", table="texture", asset_path=asset[1], forceDownload=forceDownload, returnValue=True))
+                file.close()
+            if extractModels == False:
+                continue
             # suit model
             file = open("%ssuit_%i.unity3d" % (modelPath, asset[0]), "wb")
             file.write(self.extractSingleAssetWithKeys(path="", table="member_model", asset_path=asset[2], forceDownload=forceDownload, returnValue=True))
             file.close()
             # dependencies of model
-            if extractModels == False:
-                continue
+
             query = "SELECT dependency FROM member_model_dependency WHERE asset_path = \"%s\"" % asset[2].replace('"', '""')
             print(query)
             for dependence in ac.execute(query):
