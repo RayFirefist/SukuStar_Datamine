@@ -12,16 +12,17 @@ Name reference: Blazblue Cross Tag Battle's quote: "Can't escape from crossing f
 
 * Install the dependencies with `install_dependencies.sh` if you have a UNIX environment (like Ubuntu or macOS) or, if you have Windows, run `install_dependencies.bat`
 * Run on cmd/bash/zsh `pip install --no-binary unitypack unitypack` for installing unity assets extraction library
+* Then run `python createAccount.py` to create a new account.
 
 ### Sample commands
 
-#### Calling API and making a new account
+#### Calling API and log in with your account
 
 ```python
 from lib.sifas_api import SifasApi
 
 api = SifasApi()
-api.loginStartUp()
+api.login()
 ```
 
 #### Retreiving assets bundles URLs from server
