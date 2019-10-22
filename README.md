@@ -65,7 +65,7 @@ assetDumper.extractMusicJackets() # extract music jackets and bgs
 ## TODO LIST
 
 - [X] loginStartup
-- [ ] login
+- [X] login
 - [X] download database
 - [X] download assets
 - [X] decrypt database and assets
