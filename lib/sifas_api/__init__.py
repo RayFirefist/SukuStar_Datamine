@@ -15,6 +15,7 @@ from lib.sifas_api.endpoints import SifasEndpoints
 
 from lib.penguin import masterDataRead, decrypt_stream, FileStream
 
+
 class SifasApi:
     def __init__(self, credentials="./config/credentials.json"):
         self.credentialsFile = credentials
@@ -25,8 +26,6 @@ class SifasApi:
         self.manifestVersion = "0"
         self.s = requests.session()
         self.sessionKey = b"G5OdK4KdQO5UM2nL"
-        self.authorizationKey = ""
-        self.rnd=None
         self.url = "https://jp-real-prod-v4tadlicuqeeumke.api.game25.klabgames.net/ep1010/"
         # account data
         try:
@@ -36,9 +35,9 @@ class SifasApi:
             except KeyError:
                 print("Failed to parse user id")
             try:
-                self.authorizationKey = jsonCred['authorization_key']
                 self.pw = jsonCred['password']
-                self.sessionKey = self.xor(self.sessionKey, base64.b64decode(self.pw))
+                self.sessionKey = base64.b64decode(self.pw)
+                # self.sessionKey = self.xor(self.sessionKey, base64.b64decode(self.pw))
             except KeyError:
                 print("Failed to create session key")
             try:
@@ -53,23 +52,39 @@ class SifasApi:
         endpoint = endpoint.encode("utf8")
         data_ = data.encode("utf8")
         # print(endpoint + b" " + data_)
-        signature = hmac.new(self.sessionKey, endpoint + b" " + data_, sha1).hexdigest()
+        signature = hmac.new(self.sessionKey, endpoint +
+                             b" " + data_, sha1).hexdigest()
         result = '[%s,"%s"]' % (data, signature)
         return result
 
     # writing data to the credentials file (WIP)
     def updateFile(self):
-        open(self.credentialsFile, "w").write(
-            json.dumps(
-                {
-                    "user_id": self.uid,
-                    "authorization_key": self.authorizationKey,
-                    "authorization_count": self.authCount,
-                    "password": base64.b64encode(self.pw).decode("utf-8"),
-                    "rnd": base64.b64encode(self.rnd).decode("utf-8")
-                }
+
+        config = open(self.credentialsFile, "w")
+        try:
+            config.write(
+                json.dumps(
+                    {
+                        "user_id": self.uid,
+                        # "authorization_key": self.authorizationKey,
+                        "authorization_count": self.authCount,
+                        "password": '%s' % base64.b64encode(self.pw).decode("utf-8"),
+                        # "rnd": base64.b64encode(self.rnd).decode("utf-8")
+                    }
+                )
             )
-        )
+        except TypeError:
+            config.write(
+                json.dumps(
+                    {
+                        "user_id": self.uid,
+                        # "authorization_key": self.authorizationKey,
+                        "authorization_count": self.authCount,
+                        "password": self.pw,
+                        # "rnd": base64.b64encode(self.rnd).decode("utf-8")
+                    }
+                )
+            )
 
     def xor(self, a, b):
         result = bytearray()
@@ -78,7 +93,7 @@ class SifasApi:
         return result
 
     # sends the data to the server
-    def send(self, endpoint : SifasEndpoints, data : dict):
+    def send(self, endpoint: SifasEndpoints, data: dict):
         endpoint = endpoint.value
         url = self.url + endpoint
         params = {"p": "i", "id": self.sequence, "t": int(time.time()*1000)}
@@ -97,15 +112,15 @@ class SifasApi:
             params['u'] = str(self.uid)
 
         if data is not None:
-            data = json.dumps(data, separators=(',', ':')).replace("=", "\u003d")
+            data = json.dumps(data, separators=(
+                ',', ':')).replace("=", "\u003d")
         else:
             data = "null"
 
         url_ = endpoint + "?" + parse.urlencode(params)
         data = self.sign(url_, data)
-        # print(data)
         response = self.s.post(url, params=params, data=data, headers=headers)
-        
+
         if response.status_code == 200:
             rr = response.text
             # print(rr)
@@ -127,7 +142,8 @@ class SifasApi:
         if response.status_code == 200:
             return response.content
         else:
-            raise Exception("GET failed due to HTTP (%i)" % response.status_code)
+            raise Exception("GET failed due to HTTP (%i)" %
+                            response.status_code)
 
     # creates the account from scratch
     def loginStartUp(self):
@@ -150,12 +166,10 @@ class SifasApi:
             "time_difference": 32400
         })
         self.uid = r['user_id']
-        self.authorizationKey = r['authorization_key']
-        auth_key = base64.b64decode(self.authorizationKey)
+        auth_key = base64.b64decode(r['authorization_key'])
         self.sessionKey = self.xor(auth_key, rnd)
-        self.pw = self.xor(auth_key, self.sessionKey)
-        self.rnd = rnd
-        self.manifestVersion = "7098477e95883aca"
+        self.pw = self.sessionKey
+        self.manifestVersion = "f009ab2fe59fa299"
         self.login()
 
     # makes login to the server (must-do)
@@ -177,29 +191,33 @@ class SifasApi:
             )), encoding="utf8"),
             "user_id": self.uid,
             "auth_count": self.authCount,
-            "asset_state": "Fh4FtvLJex9EY7YMhTa2Nze+0+w1r6/Y7gVO8i6ZXpph8rYrHtS9DbQQaNerMIWoGoLsUzlVMnUD62/xUhCNoWw9ahMyXqenHg=="
+            "asset_state": "s9s9agC2JRYnJDMF5vLELYpdKSxoXw1RICt6HIBSfTWP0VBd/U34Xpi7YoS9TcJR18vuAVNsx+PYGXOsYXY5h7DF5jr6WjsLz27k4R6SsSMW6UJHRLq+DBavCT2gGTTK7HXyAPtMqaH/"
         })
+        if (not r.get('authorization_count') == None):
+            self.authCount += r['authorization_count']
+            self.login()
+            return
         self.authCount += 1
-        #self.updateFile()
         self.sessionKey = self.xor(rnd, base64.b64decode(r['session_key']))
+        self.updateFile()
         self.termsAgreement()
         print("Login success")
 
     # agree ToS
     def termsAgreement(self):
-        r = self.send(SifasEndpoints.TERMS_AGREEMENT, {"terms_version":1})
+        r = self.send(SifasEndpoints.TERMS_AGREEMENT, {"terms_version": 1})
 
     # This allows to give you back a list of URLs which you can use for download packs from remote server
-    def assetGetPackUrl(self, packs:list):
+    def assetGetPackUrl(self, packs: list):
         r = self.send(SifasEndpoints.ASSET_GETPACKURL, {"pack_names": packs})
         return r['url_list']
 
-    # This allows to get the list of database 
+    # This allows to get the list of database
     def getDbList(self):
         return masterDataRead(FileStream(self.retreive("/static/%s/masterdata_i_ja" % self.manifestVersion)))
 
     # Downloads the databases and saves them into /assets/db
-    def downloadDbs(self, dbsList:dict=None, assetsPath="./assets/"):
+    def downloadDbs(self, dbsList: dict = None, assetsPath="./assets/"):
         try:
             os.makedirs(assetsPath + "db/")
         except FileExistsError:
@@ -208,9 +226,12 @@ class SifasApi:
             dbsList = self.getDbList()
         for database in dbsList:
             print("Obtaining %s" % database['db_name'])
-            baseFile = self.retreive("/static/%s/%s" % (self.manifestVersion, database['db_name']))
-            decrypted = decrypt_stream(baseFile, database['db_keys_list'][0], database['db_keys_list'][1], database['db_keys_list'][2])
+            baseFile = self.retreive("/static/%s/%s" %
+                                     (self.manifestVersion, database['db_name']))
+            decrypted = decrypt_stream(
+                baseFile, database['db_keys_list'][0], database['db_keys_list'][1], database['db_keys_list'][2])
             deflated = zlib.decompress(decrypted, -zlib.MAX_WBITS)
-            open("%sdb/%s" % (assetsPath, database['db_name']), "wb").write(deflated)
+            open("%sdb/%s" %
+                 (assetsPath, database['db_name']), "wb").write(deflated)
         print("Version %s" % self.manifestVersion)
         open("%sdb/version" % (assetsPath), "w").write(self.manifestVersion)
