@@ -199,9 +199,9 @@ class SifasApi:
         return masterDataRead(FileStream(self.retreive("/static/%s/masterdata_i_ja" % self.manifestVersion)))
 
     # Downloads the databases and saves them into /assets/db
-    def downloadDbs(self, dbsList:dict=None):
+    def downloadDbs(self, dbsList:dict=None, assetsPath="./assets/"):
         try:
-            os.makedirs("./assets/db")
+            os.makedirs(assetsPath + "db/")
         except FileExistsError:
             pass
         if dbsList is None:
@@ -211,6 +211,6 @@ class SifasApi:
             baseFile = self.retreive("/static/%s/%s" % (self.manifestVersion, database['db_name']))
             decrypted = decrypt_stream(baseFile, database['db_keys_list'][0], database['db_keys_list'][1], database['db_keys_list'][2])
             deflated = zlib.decompress(decrypted, -zlib.MAX_WBITS)
-            open("./assets/db/%s" % database['db_name'], "wb").write(deflated)
+            open("%sdb/%s" % (assetsPath, database['db_name']), "wb").write(deflated)
         print("Version %s" % self.manifestVersion)
-        open("./assets/db/version", "w").write(self.manifestVersion)
+        open("%sdb/version" % (assetsPath), "w").write(self.manifestVersion)
