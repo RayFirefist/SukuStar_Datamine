@@ -80,4 +80,3 @@ assetDumper.extractMusicJackets() # extract music jackets and bgs
 * [esterTion](https://github.com/esterTion) for assets decryptor base script
 * CPPO for HCA key
 * [Triangle](https://github.com/summertriangle-dev) for acb.py lib
-* [CrescentApricot](https://github.com/CrescentApricot/hcapy) for hcapy

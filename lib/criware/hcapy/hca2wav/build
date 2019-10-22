@@ -1,6 +1,0 @@
-#!/bin/bash -eu
-
-mkdir -p cmake-build-manual
-cd cmake-build-manual
-cmake ..
-make
