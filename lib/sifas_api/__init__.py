@@ -17,8 +17,9 @@ from lib.penguin import masterDataRead, decrypt_stream, FileStream
 
 
 class SifasApi:
-    def __init__(self, credentials="./config/credentials.json"):
+    def __init__(self, credentials="./config/credentials.json", startDir="./"):
         self.credentialsFile = credentials
+        self.startDir = startDir
         # setup useful variables
         self.uid = 0
         self.sequence = 1
@@ -149,7 +150,7 @@ class SifasApi:
     def loginStartUp(self):
         rnd = os.urandom(0x20)
         pub = serialization.load_pem_public_key(
-            open("./lib/sifas_api/klb.pub", "rb").read(),
+            open("%slib/sifas_api/klb.pub" % (self.startDir), "rb").read(),
             backend=default_backend()
         )
 
@@ -176,7 +177,7 @@ class SifasApi:
     def login(self):
         rnd = os.urandom(0x20)
         pub = serialization.load_pem_public_key(
-            open("./lib/sifas_api/klb.pub", "rb").read(),
+            open("%slib/sifas_api/klb.pub" % (self.startDir), "rb").read(),
             backend=default_backend()
         )
 
