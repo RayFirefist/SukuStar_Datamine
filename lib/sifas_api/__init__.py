@@ -196,13 +196,15 @@ class SifasApi:
         })
         if (not r.get('authorization_count') == None):
             self.authCount += r['authorization_count']
-            self.login()
-            return
+            r = self.login()
+            return r
         self.authCount += 1
         self.sessionKey = self.xor(rnd, base64.b64decode(r['session_key']))
         self.updateFile()
-        self.termsAgreement()
+        # self.termsAgreement()
+        # print(r)
         print("Login success")
+        return r
 
     # agree ToS
     def termsAgreement(self):
