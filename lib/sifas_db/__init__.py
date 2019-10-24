@@ -561,9 +561,13 @@ class AssetDumper:
                 if fileData[4] != asset_path:
                     continue
                 try:
-                    self.packs[bundle]
-                except KeyError:
-                    self.downloadPacks([bundle], forceDownload)
+                    try:
+                        self.packs[bundle]
+                    except KeyError:
+                        self.downloadPacks([bundle], forceDownload)
+                except Exception:
+                    print("Failed to download the files")
+                    continue
                 data = self.packs[bundle][fileData[0]:fileData[0]+fileData[1]]
                 print("file size %i" % data.__len__())
                 data = decrypt_stream(
@@ -595,9 +599,14 @@ class AssetDumper:
         print("Count %i" % queryResult.__len__())
         for fileData in queryResult:
             try:
-                self.packs[fileData[5]]
-            except KeyError:
-                self.downloadPacks([fileData[5]], True)
+                try:
+                    self.packs[fileData[5]]
+                except KeyError:
+                    self.downloadPacks([fileData[5]], True)
+            except Exception as e:
+                print(e)
+                print("Failed to download the file")
+                continue
             print("File no. %i" % i)
             data = self.packs[fileData[5]][fileData[0]:fileData[0]+fileData[1]]
             print("file size %i" % data.__len__())
