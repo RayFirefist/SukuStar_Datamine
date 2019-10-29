@@ -27,7 +27,7 @@ class SifasApi:
         self.manifestVersion = "0"
         self.s = requests.session()
         self.sessionKey = b"G5OdK4KdQO5UM2nL"
-        self.url = "https://jp-real-prod-v4tadlicuqeeumke.api.game25.klabgames.net/ep1010/"
+        self.url = "https://jp-real-prod-v4tadlicuqeeumke.api.game25.klabgames.net/ep1015/"
         # account data
         try:
             jsonCred = json.loads(open(credentials, "r").read())
