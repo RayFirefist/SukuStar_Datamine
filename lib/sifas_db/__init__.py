@@ -197,6 +197,17 @@ class AssetDumper:
             file.write(self.extractSingleAssetWithKeys(path="", table="texture",
                                                        asset_path=asset[1], forceDownload=forceDownload, returnValue=True))
             file.close()
+        assets = mc.execute("SELECT id, asset_path FROM m_card_trimming_live_deck").fetchall()
+        for asset in assets:
+            tempPath = asset[0].split("/")
+            tempPath.pop()
+            self.mkdir("%s%s" % (mockPath, "/".join(tempPath)))
+            print("elaboration deck %s" % asset[0])
+            # inline image
+            file = open("%s%s.png" % (mockPath, asset[0]), "wb")
+            file.write(self.extractSingleAssetWithKeys(path="", table="texture",
+                                                       asset_path=asset[1], forceDownload=forceDownload, returnValue=True))
+            file.close()
 
     def extractEmblem(self, forceDownload=False):
         path = self.assetsPath + "images/emblem/"
