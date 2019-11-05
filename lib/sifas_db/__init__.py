@@ -204,7 +204,7 @@ class AssetDumper:
             self.mkdir("%s%s" % (path, "/".join(tempPath)))
             print("elaboration deck %s" % asset[0])
             # inline image
-            file = open("%s%s.png" % (mockPath, asset[0]), "wb")
+            file = open("%s%s.png" % (path, asset[0]), "wb")
             file.write(self.extractSingleAssetWithKeys(path="", table="texture",
                                                        asset_path=asset[1], forceDownload=forceDownload, returnValue=True))
             file.close()
