@@ -80,10 +80,15 @@ class AssetDumper:
             urls = self.api.assetGetPackUrl(packs)
             for url in urls:
                 print("downloading %s" % packs[i])
-                data = requests.get(url).content
-                open("%spkg/%s" %
-                     (self.assetsPath, packs[i]), "wb").write(data)
-                self.packs[packs[i]] = data
+                try:
+                    data = requests.get(url).content
+                    open("%spkg/%s" %
+                         (self.assetsPath, packs[i]), "wb").write(data)
+                    self.packs[packs[i]] = data
+                except Exception as e:
+                    print("ERROR 403 OR UNREACHABLE")
+                    print(e)
+                    pass
                 i += 1
             pass
 
