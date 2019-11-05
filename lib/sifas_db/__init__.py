@@ -201,7 +201,7 @@ class AssetDumper:
         for asset in assets:
             tempPath = asset[0].split("/")
             tempPath.pop()
-            self.mkdir("%s%s" % (mockPath, "/".join(tempPath)))
+            self.mkdir("%s%s" % (path, "/".join(tempPath)))
             print("elaboration deck %s" % asset[0])
             # inline image
             file = open("%s%s.png" % (mockPath, asset[0]), "wb")
