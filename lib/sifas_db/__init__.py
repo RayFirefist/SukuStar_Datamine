@@ -250,24 +250,24 @@ class AssetDumper:
         for asset in assets:
             print("elaboration member %i" % asset[0])
             # standing image
-            file = open("%stex_member_standing_%i.jpg" %
+            file = open("%stex_member_standing_%i.png" %
                         (path, asset[0]), "wb")
             file.write(self.extractSingleAssetWithKeys(path="", table="texture",
                                                        asset_path=asset[1], forceDownload=forceDownload, returnValue=True))
             file.close()
             # autograph image
-            file = open("%stex_member_autograph_%i.jpg" %
+            file = open("%stex_member_autograph_%i.png" %
                         (path, asset[0]), "wb")
             file.write(self.extractSingleAssetWithKeys(path="", table="texture",
                                                        asset_path=asset[2], forceDownload=forceDownload, returnValue=True))
             file.close()
             # member_icon image
-            file = open("%stex_member_icon_%i.jpg" % (path, asset[0]), "wb")
+            file = open("%stex_member_icon_%i.png" % (path, asset[0]), "wb")
             file.write(self.extractSingleAssetWithKeys(path="", table="texture",
                                                        asset_path=asset[3], forceDownload=forceDownload, returnValue=True))
             file.close()
             # thumb image
-            file = open("%stex_member_thumbnail_%i.jpg" %
+            file = open("%stex_member_thumbnail_%i.png" %
                         (path, asset[0]), "wb")
             file.write(self.extractSingleAssetWithKeys(path="", table="texture",
                                                        asset_path=asset[4], forceDownload=forceDownload, returnValue=True))
