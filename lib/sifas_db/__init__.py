@@ -18,18 +18,21 @@ import base64
 # hashlib
 import hashlib
 # Criware Lib
-# from lib.criware import AcbCriware
+from lib.criware import AcbCriware, AwbCriware
 
 
 class AssetDumper:
 
-    def __init__(self, sifasApi: SifasApi, assetsPath="./assets/", language="ja"):
-        self.assetsPath = assetsPath
+    def __init__(self, sifasApi: SifasApi, assetsPath="./", language="ja"):
+        platform = sifasApi.platform
+        print(platform)
+        self.assetsPath = assetsPath + "assets/"
+        self.binPaths = assetsPath + "lib/criware/hca/"
         self.api = sifasApi
         self.language = language
         self.assets = sqlite3.connect(
-            assetsPath + "db/asset_i_%s_0.db" % language)
-        self.master = sqlite3.connect(assetsPath + "db/masterdata.db")
+            self.assetsPath + "db/asset_%s_%s_0.db" % (platform, language))
+        self.master = sqlite3.connect(self.assetsPath + "db/masterdata.db")
         self.packs = {}
         try:
             os.makedirs("%spkg/" % self.assetsPath)
@@ -48,6 +51,16 @@ class AssetDumper:
         file.write(binary)
         file.close()
         pass
+
+    def getPkg(self, pkgFile, forceDownload):
+        path = "%spkg/%s" % (self.assetsPath, pkgFile)
+        if os.path.exists(path) and not forceDownload:
+            return open(path, "rb").read()
+        else:
+            self.downloadPacks([pkgFile], True)
+            temp = self.packs[pkgFile]
+            del self.packs[pkgFile]
+            return temp
 
     def downloadPacks(self, packs: list, forceDownload: bool = False):
         i = 0
@@ -197,7 +210,8 @@ class AssetDumper:
             file.write(self.extractSingleAssetWithKeys(path="", table="texture",
                                                        asset_path=asset[1], forceDownload=forceDownload, returnValue=True))
             file.close()
-        assets = mc.execute("SELECT id, asset_path FROM m_card_trimming_live_deck").fetchall()
+        assets = mc.execute(
+            "SELECT id, asset_path FROM m_card_trimming_live_deck").fetchall()
         for asset in assets:
             tempPath = asset[0].split("/")
             tempPath.pop()
@@ -338,19 +352,39 @@ class AssetDumper:
                                                        asset_path=asset[1], forceDownload=forceDownload, returnValue=True))
             file.close()
 
-    def extractAudio(self, forceDownload=False):
+    def extractAudio(self, forceDownload=False, filter=""):
         path = self.assetsPath + "sound/"
         self.mkdir(path)
         ac = self.assets.cursor()
+        list = []
+        new_assets = []
+        # retreiving data
         assets = ac.execute(
-            "SELECT sheet_name, acb_pack_name FROM m_asset_sound").fetchall()
+            "SELECT sheet_name, acb_pack_name, awb_pack_name FROM m_asset_sound").fetchall()
+        # listing data
         for asset in assets:
+            if asset[0].find(filter) > -1:
+                list.append(asset)
+        # Printing amount of data
+        print("Amount %i" % list.__len__())
+        # Splitting into pieces
+        # composite_list = [list[x:x+50] for x in range(0, len(list), 50)]
+        #for entry in composite_list:
+        #    try:
+        #        self.downloadPacks(entry, forceDownload)
+        #        new_assets.append(entry)
+        #    except Exception as e:
+        #        print("Failed to download %s" % entry)
+        #        print(e)
+        for asset in list:
             print("elaboration acb %s" % asset[0])
-            self.downloadPacks([asset[1]], forceDownload)
             tempPath = "%s%s/" % (path, asset[0])
             self.mkdir(tempPath)
-            #tempAcb = AcbCriware(self.packs[asset[1]], tempPath, asset[0])
-            # tempAcb.processContents()
+            if asset[2] is None:
+                tempAcb = AcbCriware(self.getPkg(asset[1], forceDownload), tempPath, asset[0], self.binPaths)
+            else:
+                tempAcb = AwbCriware(self.getPkg(asset[1], forceDownload), self.getPkg(asset[2], forceDownload), tempPath, asset[0], self.binPaths)
+            tempAcb.processContents()
 
     def extractAdvScript(self, forceDownload=False):
         path = self.assetsPath + "adv/script/"
@@ -577,14 +611,11 @@ class AssetDumper:
                 if fileData[4] != asset_path:
                     continue
                 try:
-                    try:
-                        self.packs[bundle]
-                    except KeyError:
-                        self.downloadPacks([bundle], forceDownload)
+                    data = self.getPkg(bundle)[
+                                       fileData[0]:fileData[0]+fileData[1]]
                 except Exception:
                     print("Failed to download the files")
                     continue
-                data = self.packs[bundle][fileData[0]:fileData[0]+fileData[1]]
                 print("file size %i" % data.__len__())
                 data = decrypt_stream(
                     data, 0x3039, fileData[2], fileData[3], True)
@@ -615,16 +646,12 @@ class AssetDumper:
         print("Count %i" % queryResult.__len__())
         for fileData in queryResult:
             try:
-                try:
-                    self.packs[fileData[5]]
-                except KeyError:
-                    self.downloadPacks([fileData[5]], True)
-            except Exception as e:
-                print(e)
-                print("Failed to download the file")
+                data = self.getPkg(fileData[5])[
+                                       fileData[0]:fileData[0]+fileData[1]]
+            except Exception:
+                print("Failed to download the files")
                 continue
             print("File no. %i" % i)
-            data = self.packs[fileData[5]][fileData[0]:fileData[0]+fileData[1]]
             print("file size %i" % data.__len__())
             decData = decrypt_stream(
                 data, 0x3039, fileData[2], fileData[3], True)
@@ -634,7 +661,7 @@ class AssetDumper:
                 open("temp/tempUnity", "wb").write(decData)
                 self.mkdir(path)
                 try:
-                        #unityBundle = UnityAssetBundle(path)
+                        # unityBundle = UnityAssetBundle(path)
                         # unityBundle.setBundleByPath("temp/tempUnity")
                         # unityBundle.extractAssets()
                         # i+=1

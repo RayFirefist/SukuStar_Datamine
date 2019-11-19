@@ -17,7 +17,7 @@ from lib.penguin import masterDataRead, decrypt_stream, FileStream
 
 
 class SifasApi:
-    def __init__(self, credentials="./config/credentials.json", startDir="./"):
+    def __init__(self, credentials="./config/credentials.json", startDir="./", platform="i"):
         self.credentialsFile = credentials
         self.startDir = startDir
         # setup useful variables
@@ -28,6 +28,7 @@ class SifasApi:
         self.s = requests.session()
         self.sessionKey = b"I6ow2cY1c2wWXJP7"
         self.url = "https://jp-real-prod-v4tadlicuqeeumke.api.game25.klabgames.net/ep1016/"
+        self.platform = platform
         # account data
         try:
             jsonCred = json.loads(open(credentials, "r").read())
@@ -97,7 +98,8 @@ class SifasApi:
     def send(self, endpoint: SifasEndpoints, data: dict):
         endpoint = endpoint.value
         url = self.url + endpoint
-        params = {"p": "i", "id": self.sequence, "t": int(time.time()*1000)}
+        # a = android, i = ios
+        params = {"p": self.platform, "id": self.sequence, "t": int(time.time()*1000)}
         self.sequence += 1
         headers = {
             "user-agent": "allstars/1 CFNetwork/978.0.7 Darwin/18.7.0",
@@ -217,7 +219,7 @@ class SifasApi:
 
     # This allows to get the list of database
     def getDbList(self):
-        return masterDataRead(FileStream(self.retreive("/static/%s/masterdata_i_ja" % self.manifestVersion)))
+        return masterDataRead(FileStream(self.retreive("/static/%s/masterdata_%s_ja" % (self.manifestVersion, self.platform))))
 
     # Downloads the databases and saves them into /assets/db
     def downloadDbs(self, dbsList: dict = None, assetsPath="./assets/"):

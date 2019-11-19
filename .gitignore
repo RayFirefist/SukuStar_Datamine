@@ -23,7 +23,7 @@ assets*
 /masterdata_i_ja
 
 # credentials json
-*credentials.json
+*credentials.json*
 
 # temp folder
 *temp*

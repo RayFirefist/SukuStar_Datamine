@@ -61,6 +61,7 @@ assetDumper.extractAdvScript() # extract scenario script
 assetDumper.extractAdvGraphics() # extract scenario graphics (like sprites)
 assetDumper.extractLessonAnimation() # extract lesson animation bundles (unity3d bundles)
 assetDumper.extractMusicJackets() # extract music jackets and bgs
+assetDumper.extractSound(filter="") # extracts the audio files into WAV files. You can provide a filter of which file(s) you wish to process (by default, it's set as "", so ALL files will be processed, around 13k)
 ```
 
 ## TODO LIST
@@ -72,12 +73,13 @@ assetDumper.extractMusicJackets() # extract music jackets and bgs
 - [X] decrypt database and assets
 - [X] reading database
 - [X] extracting assets
-- [ ] (WIP) assets naming
+- [X] (WIP) assets naming
 - [ ] extract correctly unity files
-- [ ] extract and deal with audio
+- [X] extract and deal with audio
 
 # Credits
 
 * [esterTion](https://github.com/esterTion) for assets decryptor base script
 * CPPO for HCA key
 * [Triangle](https://github.com/summertriangle-dev) for acb.py lib
+* [Nyagamon](https://github.com/Nyagamon/HCADecoder) for HCA decoder source code.
