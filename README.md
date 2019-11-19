@@ -61,7 +61,7 @@ assetDumper.extractAdvScript() # extract scenario script
 assetDumper.extractAdvGraphics() # extract scenario graphics (like sprites)
 assetDumper.extractLessonAnimation() # extract lesson animation bundles (unity3d bundles)
 assetDumper.extractMusicJackets() # extract music jackets and bgs
-assetDumper.extractSound(filter="") # extracts the audio files into WAV files. You can provide a filter of which file(s) you wish to process (by default, it's set as "", so ALL files will be processed, around 13k)
+assetDumper.extractAudio(filter="") # extracts the audio files into WAV files. You can provide a filter of which file(s) you wish to process (by default, it's set as "", so ALL files will be processed, around 13k)
 ```
 
 ## TODO LIST

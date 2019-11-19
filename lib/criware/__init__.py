@@ -36,7 +36,7 @@ class AcbCriware:
             if fileType == ".hca":
                 name = "{0}{1}".format(track.name, ".wav")
                 with open("temp/tempHca", "wb") as hca:
-                    print(hca.write(self.data_source.file_data_for_cue_id(track.wav_id)))
+                    print(hca.write(self.data_source.file_data_for_cue_id(track.cue_id)))
                 subprocess.call([self.binPath + binaries[platform.system()], "temp/tempHca", "-o", os.path.join(self.target_dir, name)])
                 #tempHca = HcaCriware(self.data_source.file_data_for_cue_id(track.wav_id), self.target_dir, name)
                 #tempHca.processContent()
@@ -69,7 +69,7 @@ class AwbCriware:
             if fileType == ".hca":
                 name = "{0}{1}".format(track.name, ".wav")
                 with open("temp/tempHca", "wb") as hca:
-                    print(hca.write(self.data_source.file_data_for_cue_id(track.wav_id)))
+                    print(hca.write(self.data_source.file_data_for_cue_id(track.cue_id)))
                 subprocess.call([self.binPath + binaries[platform.system()], "temp/tempHca", "-o", os.path.join(self.target_dir, name)])
                 # with open(os.path.join(self.target_dir, name), "wb") as named_out_file:
                 #     print(named_out_file.write(self.data_source.file_data_for_cue_id(track.wav_id)))
