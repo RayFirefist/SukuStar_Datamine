@@ -43,7 +43,7 @@ class AcbCriware:
             else:
                 name = "{0}{1}".format(track.name, fileType)
                 with open(os.path.join(self.target_dir, name), "wb") as named_out_file:
-                    named_out_file.write(named_out_file.write(self.data_source.file_data_for_cue_id(track.wav_id)))
+                    named_out_file.write(self.data_source.file_data_for_cue_id(track.cue_id))
         pass
 
 class AwbCriware:
@@ -78,5 +78,5 @@ class AwbCriware:
             else:
                 name = "{0}{1}".format(track.name, fileType)
                 with open(os.path.join(self.target_dir, name), "wb") as named_out_file:
-                    named_out_file.write(named_out_file.write(self.data_source.file_data_for_cue_id(track.wav_id)))
+                    named_out_file.write(self.data_source.file_data_for_cue_id(track.cue_id))
         pass
