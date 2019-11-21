@@ -613,8 +613,9 @@ class AssetDumper:
                 try:
                     data = self.getPkg(bundle)[
                                        fileData[0]:fileData[0]+fileData[1]]
-                except Exception:
+                except Exception as e:
                     print("Failed to download the files")
+                    print(e)
                     continue
                 print("file size %i" % data.__len__())
                 data = decrypt_stream(
@@ -648,8 +649,9 @@ class AssetDumper:
             try:
                 data = self.getPkg(fileData[5])[
                                        fileData[0]:fileData[0]+fileData[1]]
-            except Exception:
+            except Exception as e:
                 print("Failed to download the files")
+                print(e)
                 continue
             print("File no. %i" % i)
             print("file size %i" % data.__len__())
