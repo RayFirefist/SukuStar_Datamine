@@ -52,7 +52,7 @@ class AssetDumper:
         file.close()
         pass
 
-    def getPkg(self, pkgFile, forceDownload):
+    def getPkg(self, pkgFile, forceDownload=False):
         path = "%spkg/%s" % (self.assetsPath, pkgFile)
         if os.path.exists(path) and not forceDownload:
             return open(path, "rb").read()
