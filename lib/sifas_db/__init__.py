@@ -611,7 +611,7 @@ class AssetDumper:
                 if fileData[4] != asset_path:
                     continue
                 try:
-                    data = self.getPkg(bundle)[
+                    data = self.getPkg(bundle, forceDownload)[
                                        fileData[0]:fileData[0]+fileData[1]]
                 except Exception as e:
                     print("Failed to download the files")
@@ -647,7 +647,7 @@ class AssetDumper:
         print("Count %i" % queryResult.__len__())
         for fileData in queryResult:
             try:
-                data = self.getPkg(fileData[5])[
+                data = self.getPkg(fileData[5], forceDownload)[
                                        fileData[0]:fileData[0]+fileData[1]]
             except Exception as e:
                 print("Failed to download the files")
