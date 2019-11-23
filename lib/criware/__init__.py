@@ -4,7 +4,11 @@ import os
 import io
 import platform
 
-import lib.criware.acb as acb # Thanks Triangle
+try:
+    import lib.criware.acb as acb # Thanks Triangle
+except AttributeError as e:
+    import lib.criware.acb as tempLib
+    acb = tempLib
 
 import subprocess
 
