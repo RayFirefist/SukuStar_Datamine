@@ -18,7 +18,11 @@ import base64
 # hashlib
 import hashlib
 # Criware Lib
-from lib.criware import AcbCriware, AwbCriware
+try:
+    from lib.criware import AcbCriware, AwbCriware
+except Exception as e:
+    print("Cannot import criware libs due to")
+    print(e)
 
 
 class AssetDumper:
