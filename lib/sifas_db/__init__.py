@@ -29,8 +29,11 @@ class AssetDumper:
 
     def __init__(self, sifasApi: SifasApi, assetsPath="./", language="ja"):
         platform = sifasApi.platform
-        print(platform)
-        self.assetsPath = assetsPath + "assets/"
+        temp = "iOS" if platform == "i" else ""
+        if temp == "":
+            temp = "Android" if platform == "a" else "unknown"
+        print("Platform detected: %s" % temp)
+        self.assetsPath = assetsPath + "assets/" if assetsPath == "./" else assetsPath
         self.binPaths = assetsPath + "lib/criware/hca/"
         self.api = sifasApi
         self.language = language
