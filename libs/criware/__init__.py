@@ -7,8 +7,7 @@ import platform
 try:
     import lib.criware.acb as acb # Thanks Triangle
 except AttributeError as e:
-    print("Loading acb from 'libs' folder")
-    import libs.criware.acb as tempLib
+    import lib.criware.acb as tempLib
     acb = tempLib
 
 import subprocess
