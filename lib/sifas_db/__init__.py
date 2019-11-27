@@ -317,10 +317,18 @@ class AssetDumper:
             if extractModels == False:
                 continue
             # suit model
-            file = open("%ssuit_%i.unity3d" % (modelPath, asset[0]), "wb")
-            file.write(self.extractSingleAssetWithKeys(path="", table="member_model",
+            try:
+                file = open("%ssuit_%i.unity3d" % (modelPath, asset[0]), "wb")
+                file.write(self.extractSingleAssetWithKeys(path="", table="member_model",
                                                        asset_path=asset[2], forceDownload=forceDownload, returnValue=True))
-            file.close()
+                file.close()
+            except Exception as e:
+                print("Ignoring %i due to" % asset[0])
+                print(e)
+                if os.path.exists("%ssuit_%i.unity3d" % (modelPath, asset[0])):
+                    os.remove("%ssuit_%i.unity3d" % (modelPath, asset[0]))
+                continue
+            
             # dependencies of model
 
             query = "SELECT dependency FROM member_model_dependency WHERE asset_path = \"%s\"" % asset[2].replace(
