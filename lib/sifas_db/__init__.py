@@ -326,15 +326,16 @@ class AssetDumper:
             query = "SELECT dependency FROM member_model_dependency WHERE asset_path = \"%s\"" % asset[2].replace(
                 '"', '""')
             print(query)
-            for dependence in ac.execute(query):
-                file = open("%ssuit_dependency_%i_%i.unity3d" %
+            try:
+                for dependence in ac.execute(query):
+                    file = open("%ssuit_dependency_%i_%i.unity3d" %
                             (modelPath, asset[0], depIndex), "wb")
-                file.write(self.extractSingleAssetWithKeys(
-                    path="", table="shader" if dependence[0] == "§M|" else "member_model", asset_path=dependence[0], forceDownload=forceDownload, returnValue=True))
-                file.close
-                if dependence[0] == "§M|":
-                    print("shaders")
-                    query = "SELECT dependency FROM shader_dependency WHERE asset_path = \"§M|\""
+                    file.write(self.extractSingleAssetWithKeys(
+                        path="", table="shader" if dependence[0] == "§M|" else "member_model", asset_path=dependence[0], forceDownload=forceDownload, returnValue=True))
+                    file.close()
+                    if dependence[0] == "§M|":
+                        print("shaders")
+                        query = "SELECT dependency FROM shader_dependency WHERE asset_path = \"§M|\""
                     for shaderDependence in ac.execute(query):
                         file = open("%ssuit_shader_dependency_%i_%i.unity3d" % (
                             modelPath, asset[0], shaderIndex), "wb")
@@ -342,7 +343,9 @@ class AssetDumper:
                             path="", table="shader", asset_path=shaderDependence[0], forceDownload=forceDownload, returnValue=True))
                         file.close()
                         shaderIndex += 1
-                depIndex += 1
+                    depIndex += 1
+            except Exception as e:
+                print(e)
 
     def extractAccessory(self, forceDownload=False):
         path = self.assetsPath + "images/accessory/"
@@ -376,7 +379,7 @@ class AssetDumper:
         print("Amount %i" % list.__len__())
         # Splitting into pieces
         # composite_list = [list[x:x+50] for x in range(0, len(list), 50)]
-        #for entry in composite_list:
+        # for entry in composite_list:
         #    try:
         #        self.downloadPacks(entry, forceDownload)
         #        new_assets.append(entry)
@@ -388,9 +391,11 @@ class AssetDumper:
             tempPath = "%s%s/" % (path, asset[0])
             self.mkdir(tempPath)
             if asset[2] is None:
-                tempAcb = AcbCriware(self.getPkg(asset[1], forceDownload), tempPath, asset[0], self.binPaths)
+                tempAcb = AcbCriware(self.getPkg(
+                    asset[1], forceDownload), tempPath, asset[0], self.binPaths)
             else:
-                tempAcb = AwbCriware(self.getPkg(asset[1], forceDownload), self.getPkg(asset[2], forceDownload), tempPath, asset[0], self.binPaths)
+                tempAcb = AwbCriware(self.getPkg(asset[1], forceDownload), self.getPkg(
+                    asset[2], forceDownload), tempPath, asset[0], self.binPaths)
             tempAcb.processContents()
 
     def extractAdvScript(self, forceDownload=False):
@@ -619,7 +624,7 @@ class AssetDumper:
                     continue
                 try:
                     data = self.getPkg(bundle, forceDownload)[
-                                       fileData[0]:fileData[0]+fileData[1]]
+                        fileData[0]:fileData[0]+fileData[1]]
                 except Exception as e:
                     print("Failed to download the files")
                     print(e)
@@ -655,7 +660,7 @@ class AssetDumper:
         for fileData in queryResult:
             try:
                 data = self.getPkg(fileData[5], forceDownload)[
-                                       fileData[0]:fileData[0]+fileData[1]]
+                    fileData[0]:fileData[0]+fileData[1]]
             except Exception as e:
                 print("Failed to download the files")
                 print(e)
@@ -687,6 +692,7 @@ class AssetDumper:
             #  base64.b64encode(fileData[4].encode("utf-8")).decode("utf-8").replace("/", "_BACK_")
             open(
                 "%s/%s.%s" %
-                (path, hashlib.md5(fileData[4].encode('utf-8')).hexdigest(), fileExt), "wb"
+                (path, hashlib.md5(fileData[4].encode(
+                    'utf-8')).hexdigest(), fileExt), "wb"
             ).write(decData)
             i += 1
