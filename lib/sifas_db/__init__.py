@@ -663,7 +663,9 @@ class AssetDumper:
                 tempPath = path + hashlib.md5(fileData[4].encode("utf-8")).hexdigest() + extension
                 if os.path.exists(tempPath):
                     isSkip = not overwriteFile
-            if isSkip: continue
+            if isSkip: 
+                print("DEBUG: FILE %s EXISTS. IGNORING..." % hashlib.md5(fileData[4].encode("utf-8")).hexdigest())
+                continue
             try:
                 data = self.getPkg(fileData[5], forceDownload)[
                     fileData[0]:fileData[0]+fileData[1]]
