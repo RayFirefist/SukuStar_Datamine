@@ -186,20 +186,17 @@ class AssetDumper:
         self.mkdir(path)
         mc = self.master.cursor()
         ac = self.assets.cursor()
-        assets = mc.execute(
-            "SELECT still_master_id, display_order, still_asset_path FROM m_still_texture").fetchall()
+        assets = mc.execute("SELECT still_master_id, display_order, still_asset_path FROM m_still_texture").fetchall()
         for asset in assets:
             print("elaboration still %i" % asset[0])
             # still illus
-            self.writeFile(asset[2], "%stex_still_%i_%i.jpg" %
-                           (path, asset[0], asset[1]))
+            self.writeFile(asset[2], "%stex_still_%i_%i.jpg" % (path, asset[0], asset[1]))
         assets = mc.execute(
             "SELECT still_master_id, thumbnail_asset_path FROM m_still").fetchall()
         for asset in assets:
             print("elaboration thumb still %i" % asset[0])
             # still illus
-            self.writeFile(
-                asset[1], "%stex_thumb_still_%i.png" % (path, asset[0]))
+            self.writeFile(asset[1], "%stex_thumb_still_%i.png" % (path, asset[0]))
 
     def extractInlineImages(self, forceDownload=False):
         path = self.assetsPath + "images/inline/"
@@ -278,28 +275,13 @@ class AssetDumper:
         for asset in assets:
             print("elaboration member %i" % asset[0])
             # standing image
-            file = open("%stex_member_standing_%i.png" %
-                        (path, asset[0]), "wb")
-            file.write(self.extractSingleAssetWithKeys(path="", table="texture",
-                                                       asset_path=asset[1], forceDownload=forceDownload, returnValue=True))
-            file.close()
+            self.writeFile(asset[1], "%stex_member_standing_%i.png" % (path, asset[0]))
             # autograph image
-            file = open("%stex_member_autograph_%i.png" %
-                        (path, asset[0]), "wb")
-            file.write(self.extractSingleAssetWithKeys(path="", table="texture",
-                                                       asset_path=asset[2], forceDownload=forceDownload, returnValue=True))
-            file.close()
+            self.writeFile(asset[2], "%stex_member_autograph_%i.png" % (path, asset[0]))
             # member_icon image
-            file = open("%stex_member_icon_%i.png" % (path, asset[0]), "wb")
-            file.write(self.extractSingleAssetWithKeys(path="", table="texture",
-                                                       asset_path=asset[3], forceDownload=forceDownload, returnValue=True))
-            file.close()
+            self.writeFile(asset[3], "%stex_member_icon_%i.png" % (path, asset[0]))
             # thumb image
-            file = open("%stex_member_thumbnail_%i.png" %
-                        (path, asset[0]), "wb")
-            file.write(self.extractSingleAssetWithKeys(path="", table="texture",
-                                                       asset_path=asset[4], forceDownload=forceDownload, returnValue=True))
-            file.close()
+            self.writeFile(asset[4], "%stex_member_thumbnail_%i.png" % (path, asset[0]))
 
     def extractSuit(self, extractModels: bool = False, extractThumbs: bool = True, forceDownload=False):
         imagePath = self.assetsPath + "images/suit/"
@@ -449,16 +431,13 @@ class AssetDumper:
             "%s/images/live2d/sd_models/" % self.assetsPath, "live2d_sd_model")
 
     def extractTexture(self):
-        self.extractAssetsWithKeys("%s/images/texture/" %
-                                   self.assetsPath, "texture")
+        self.extractAssetsWithKeys("%s/images/texture/" % self.assetsPath, "texture")
 
     def extractStage(self):
-        self.extractAssetsWithKeys("%s/models/stage/" %
-                                   self.assetsPath, "stage")
+        self.extractAssetsWithKeys("%s/models/stage/" % self.assetsPath, "stage")
 
     def extractStageEffect(self):
-        self.extractAssetsWithKeys(
-            "%s/models/stage_effect/" % self.assetsPath, "stage_effect")
+        self.extractAssetsWithKeys("%s/models/stage_effect/" % self.assetsPath, "stage_effect")
 
     def extractMusicJackets(self, forceDownload=False):
         path = "%s/images/live/" % self.assetsPath
@@ -470,14 +449,8 @@ class AssetDumper:
             "SELECT music_id, jacket_asset_path, background_asset_path FROM m_live")
         for music in musicData:
             print("Elaborating music %i" % music[0])
-            file = open("%sjacket/%i.jpg" % (path, music[0]), "wb")
-            file.write(self.extractSingleAssetWithKeys(path="", table="texture",
-                                                       asset_path=music[1], forceDownload=forceDownload, returnValue=True))
-            file.close()
-            file = open("%sbackground/%i.jpg" % (path, music[0]), "wb")
-            file.write(self.extractSingleAssetWithKeys(path="", table="texture",
-                                                       asset_path=music[2], forceDownload=forceDownload, returnValue=True))
-            file.close()
+            self.writeFile(music[1], "%sjacket/%i.jpg" % (path, music[0]))
+            self.writeFile(music[2], "%sbackground/%i.jpg" % (path, music[0]))
         pass
 
     def extractLessonAnimation(self, forceDownload=False):
@@ -487,8 +460,7 @@ class AssetDumper:
         ac = self.assets.cursor()
         lessonData = mc.execute("SELECT * FROM m_lesson_animation")
         for lessonEntry in lessonData:
-            print("Obtaining lesson bundle %i %i" %
-                  (lessonEntry[0], lessonEntry[1]))
+            print("Obtaining lesson bundle %i %i" % (lessonEntry[0], lessonEntry[1]))
             self.mkdir("%s%i/" % (path, lessonEntry[0]))
             file = open("%s%i/%i_normal_emotion.unity3d" %
                         (path, lessonEntry[0], lessonEntry[1]), "wb")
@@ -556,10 +528,6 @@ class AssetDumper:
                                                        asset_path=lessonEntry[7], forceDownload=forceDownload, returnValue=True))
             file.close()
         pass
-
-    # deprecated
-    # def extractMemberModels(self):
-    #    self.extractAssetsWithKeys("%s/models/member/" % self.assetsPath, "member_model")
 
     def extractTimeline(self):
         self.extractAssetsWithKeys(
