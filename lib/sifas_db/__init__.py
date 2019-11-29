@@ -639,7 +639,7 @@ class AssetDumper:
                         "utf-8").replace("/", "_BACK_")), "wb").write(data)
                 i += 1
 
-    def extractAssetsWithKeys(self, path, table, forceDownload=False):
+    def extractAssetsWithKeys(self, path, table, overwriteFile=False, forceDownload=False):
         self.mkdir("temp")
         self.mkdir(path)
         c = self.assets.cursor()
@@ -658,6 +658,12 @@ class AssetDumper:
         queryResult = c.execute(query).fetchall()
         print("Count %i" % queryResult.__len__())
         for fileData in queryResult:
+            isSkip = False
+            for extension in EXPECTED_FORMATS:
+                tempPath = path + hashlib.md5(fileData[4].encode("utf-8")).hexdigest() + extension
+                if os.path.exists(tempPath):
+                    isSkip = not overwriteFile
+            if isSkip: continue
             try:
                 data = self.getPkg(fileData[5], forceDownload)[
                     fileData[0]:fileData[0]+fileData[1]]
