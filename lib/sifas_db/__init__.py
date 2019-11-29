@@ -24,6 +24,8 @@ except Exception as e:
     print("Cannot import criware libs due to")
     print(e)
 
+# Expected formats to hook
+EXPECTED_FORMATS = ['.jpg', '.png', '.unity3d', '.bin']
 
 class AssetDumper:
 
@@ -57,6 +59,16 @@ class AssetDumper:
         file = open(path, "wb")
         file.write(binary)
         file.close()
+        pass
+
+    def writeFile(self, asset_path, destination, namelessOrigin="images/texture/", table="texture", forceDownload=False):
+        for extension in EXPECTED_FORMATS:
+            tempPath = self.assetsPath + namelessOrigin + hashlib.md5(asset_path.encode('utf-8')).hexdigest() + extension
+            if os.path.exists(tempPath):
+                print("DEBUG: FOUND ASSET %s" % tempPath)
+                os.link(tempPath, destination)
+                return
+        self.writeDataInsideFile(destination, self.extractSingleAssetWithKeys(path="", table="texture", asset_path=asset_path, forceDownload=forceDownload, returnValue=True))
         pass
 
     def getPkg(self, pkgFile, forceDownload=False):
@@ -130,26 +142,13 @@ class AssetDumper:
             print("elaboration card %i" % asset[0])
             isAwaken = "awaken" if asset[1] == 2 else "normal"
             # card illustration
-            self.writeDataInsideFile("%stex_card_%i_%s.jpg" % (path, asset[0], isAwaken), self.extractSingleAssetWithKeys(
-                path="", table="texture", asset_path=asset[2], forceDownload=forceDownload, returnValue=True))
+            self.writeFile(asset[2], "%stex_card_%i_%s.jpg" % (path, asset[0], isAwaken), forceDownload)
             # thumb illustration
-            file = open("%stex_thumb_%i_%s.jpg" %
-                        (path, asset[0], isAwaken), "wb")
-            file.write(self.extractSingleAssetWithKeys(path="", table="texture",
-                                                       asset_path=asset[3], forceDownload=forceDownload, returnValue=True))
-            file.close()
+            self.writeFile(asset[3], "%stex_thumb_%i_%s.jpg" % (path, asset[0], isAwaken), forceDownload)
             # still thumb illustration
-            file = open("%stex_still_thumb_%i_%s.jpg" %
-                        (path, asset[0], isAwaken), "wb")
-            file.write(self.extractSingleAssetWithKeys(path="", table="texture",
-                                                       asset_path=asset[4], forceDownload=forceDownload, returnValue=True))
-            file.close()
+            self.writeFile(asset[4], "%stex_still_thumb_%i_%s.jpg" % (path, asset[0], isAwaken), forceDownload)
             # bg
-            file = open("%stex_bg_%i_%s.jpg" %
-                        (path, asset[0], isAwaken), "wb")
-            file.write(self.extractSingleAssetWithKeys(path="", table="texture",
-                                                       asset_path=asset[5], forceDownload=forceDownload, returnValue=True))
-            file.close()
+            self.writeFile(asset[5], "%stex_bg_%i_%s.jpg" % (path, asset[0], isAwaken), forceDownload)
 
     def extractStillIllus(self, forceDownload=False):
         path = self.assetsPath + "images/still/"
