@@ -388,13 +388,13 @@ class AssetDumper:
                     asset[2], forceDownload), tempPath, asset[0], self.binPaths)
             tempAcb.processContents()
 
-    def extractAdvScript(self, forceDownload=False):
+    def extractAdvScript(self, assetPathFilter:str="", forceDownload:bool=False):
         path = self.assetsPath + "adv/script/"
         self.mkdir(path)
         mc = self.master.cursor()
         ac = self.assets.cursor()
         assets = ac.execute(
-            "SELECT asset_path, pack_name FROM adv_script").fetchall()
+            "SELECT asset_path, pack_name FROM adv_script WHERE asset_path LIKE '%" + assetPathFilter + "%'").fetchall()
         for asset in assets:
             print("elaboration script %s" % asset[0])
             # inline image
@@ -406,13 +406,13 @@ class AssetDumper:
                                                        asset_path=asset[0], forceDownload=forceDownload, returnValue=True))
             file.close()
 
-    def extractAdvGraphics(self, forceDownload=False):
+    def extractAdvGraphics(self, scriptNameFilter:str="", forceDownload=False):
         path = self.assetsPath + "adv/graphics/"
         self.mkdir(path)
         mc = self.master.cursor()
         ac = self.assets.cursor()
         assets = ac.execute(
-            "SELECT script_name, idx, resource FROM adv_graphic").fetchall()
+            "SELECT script_name, idx, resource FROM adv_graphic WHERE script_name LIKE '%" + scriptNameFilter + "%'").fetchall()
         for asset in assets:
             print("elaboration graphic %s" % asset[0])
             # inline image
