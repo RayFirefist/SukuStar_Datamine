@@ -23,10 +23,16 @@ try:
 except Exception as e:
     print("Cannot import criware libs due to")
     print(e)
+# Platform
+import platform
 
 # Expected formats to hook
 EXPECTED_FORMATS = ['.jpg', '.png', '.unity3d', '.bin']
-
+OPERATION_ASSETS = {
+    "Darwin": os.symlink,
+    "Linux": os.symlink,
+    "Windows": os.link
+}
 
 class AssetDumper:
 
@@ -81,10 +87,12 @@ class AssetDumper:
                     import getPath
                     tempPath = getPath.SCRIPT_DIR + tempPath[2:]
                 try:
-                    os.link(tempPath, destination)
+                    OPERATION_ASSETS[platform.system()](tempPath, destination)
                 except FileExistsError:
                     print("DEBUG: FILE EXISTS ALREADY IN %s. IGNORING..." %
                           destination)
+                except OSError:
+                    os.symlink(tempPath, destination)
                 return
         self.writeDataInsideFile(destination, self.extractSingleAssetWithKeys(
             path="", table=table, asset_path=asset_path, forceDownload=forceDownload, returnValue=True))
