@@ -61,14 +61,29 @@ class AssetDumper:
         file.close()
         pass
 
-    def writeFile(self, asset_path, destination, namelessOrigin="images/texture/", table="texture", forceDownload=False):
+    def writeFile(self, asset_path, destination:str, namelessOrigin="images/texture/", table="texture", forceDownload=False):
+        if (destination.startswith("./")):
+            import getPath
+            destination = getPath.SCRIPT_DIR + destination[2:]
         for extension in EXPECTED_FORMATS:
             tempPath = self.assetsPath + namelessOrigin + hashlib.md5(asset_path.encode('utf-8')).hexdigest() + extension
             if os.path.exists(tempPath):
                 print("DEBUG: FOUND ASSET %s" % tempPath)
-                os.link(tempPath, destination)
+                if (not destination.endswith(extension)):
+                    if destination.endswith(".unity3d"):
+                        destination = destination[:-8] + extension
+                    else:
+                        destination = destination[:-4] + extension
+                    print("DEBUG: FIXED EXTENSION ON %s" % destination)
+                if (tempPath.startswith("./")):
+                    import getPath
+                    tempPath = getPath.SCRIPT_DIR + tempPath[2:]
+                try:
+                    os.link(tempPath, destination)
+                except FileExistsError:
+                    print("DEBUG: FILE EXISTS ALREADY IN %s. IGNORING..." % destination)
                 return
-        self.writeDataInsideFile(destination, self.extractSingleAssetWithKeys(path="", table="texture", asset_path=asset_path, forceDownload=forceDownload, returnValue=True))
+        self.writeDataInsideFile(destination, self.extractSingleAssetWithKeys(path="", table=table, asset_path=asset_path, forceDownload=forceDownload, returnValue=True))
         pass
 
     def getPkg(self, pkgFile, forceDownload=False):
