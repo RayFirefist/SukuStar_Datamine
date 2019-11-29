@@ -27,6 +27,7 @@ except Exception as e:
 # Expected formats to hook
 EXPECTED_FORMATS = ['.jpg', '.png', '.unity3d', '.bin']
 
+
 class AssetDumper:
 
     def __init__(self, sifasApi: SifasApi, assetsPath="./", language="ja"):
@@ -61,12 +62,13 @@ class AssetDumper:
         file.close()
         pass
 
-    def writeFile(self, asset_path, destination:str, namelessOrigin="images/texture/", table="texture", forceDownload=False):
+    def writeFile(self, asset_path, destination: str, namelessOrigin="images/texture/", table="texture", forceDownload=False):
         if (destination.startswith("./")):
             import getPath
             destination = getPath.SCRIPT_DIR + destination[2:]
         for extension in EXPECTED_FORMATS:
-            tempPath = self.assetsPath + namelessOrigin + hashlib.md5(asset_path.encode('utf-8')).hexdigest() + extension
+            tempPath = self.assetsPath + namelessOrigin + \
+                hashlib.md5(asset_path.encode('utf-8')).hexdigest() + extension
             if os.path.exists(tempPath):
                 print("DEBUG: FOUND ASSET %s" % tempPath)
                 if (not destination.endswith(extension)):
@@ -81,9 +83,11 @@ class AssetDumper:
                 try:
                     os.link(tempPath, destination)
                 except FileExistsError:
-                    print("DEBUG: FILE EXISTS ALREADY IN %s. IGNORING..." % destination)
+                    print("DEBUG: FILE EXISTS ALREADY IN %s. IGNORING..." %
+                          destination)
                 return
-        self.writeDataInsideFile(destination, self.extractSingleAssetWithKeys(path="", table=table, asset_path=asset_path, forceDownload=forceDownload, returnValue=True))
+        self.writeDataInsideFile(destination, self.extractSingleAssetWithKeys(
+            path="", table=table, asset_path=asset_path, forceDownload=forceDownload, returnValue=True))
         pass
 
     def getPkg(self, pkgFile, forceDownload=False):
@@ -157,13 +161,17 @@ class AssetDumper:
             print("elaboration card %i" % asset[0])
             isAwaken = "awaken" if asset[1] == 2 else "normal"
             # card illustration
-            self.writeFile(asset[2], "%stex_card_%i_%s.jpg" % (path, asset[0], isAwaken), forceDownload=forceDownload)
+            self.writeFile(asset[2], "%stex_card_%i_%s.jpg" % (
+                path, asset[0], isAwaken), forceDownload=forceDownload)
             # thumb illustration
-            self.writeFile(asset[3], "%stex_thumb_%i_%s.jpg" % (path, asset[0], isAwaken), forceDownload=forceDownload)
+            self.writeFile(asset[3], "%stex_thumb_%i_%s.jpg" % (
+                path, asset[0], isAwaken), forceDownload=forceDownload)
             # still thumb illustration
-            self.writeFile(asset[4], "%stex_still_thumb_%i_%s.jpg" % (path, asset[0], isAwaken), forceDownload=forceDownload)
+            self.writeFile(asset[4], "%stex_still_thumb_%i_%s.jpg" % (
+                path, asset[0], isAwaken), forceDownload=forceDownload)
             # bg
-            self.writeFile(asset[5], "%stex_bg_%i_%s.jpg" % (path, asset[0], isAwaken), forceDownload=forceDownload)
+            self.writeFile(asset[5], "%stex_bg_%i_%s.jpg" % (
+                path, asset[0], isAwaken), forceDownload=forceDownload)
 
     def extractStillIllus(self, forceDownload=False):
         path = self.assetsPath + "images/still/"
@@ -175,20 +183,15 @@ class AssetDumper:
         for asset in assets:
             print("elaboration still %i" % asset[0])
             # still illus
-            file = open("%stex_still_%i_%i.jpg" %
-                        (path, asset[0], asset[1]), "wb")
-            file.write(self.extractSingleAssetWithKeys(path="", table="texture",
-                                                       asset_path=asset[2], forceDownload=forceDownload, returnValue=True))
-            file.close()
+            self.writeFile(asset[2], "%stex_still_%i_%i.jpg" %
+                           (path, asset[0], asset[1]))
         assets = mc.execute(
             "SELECT still_master_id, thumbnail_asset_path FROM m_still").fetchall()
         for asset in assets:
             print("elaboration thumb still %i" % asset[0])
             # still illus
-            file = open("%stex_thumb_still_%i.png" % (path, asset[0]), "wb")
-            file.write(self.extractSingleAssetWithKeys(path="", table="texture",
-                                                       asset_path=asset[1], forceDownload=forceDownload, returnValue=True))
-            file.close()
+            self.writeFile(
+                asset[1], "%stex_thumb_still_%i.png" % (path, asset[0]))
 
     def extractInlineImages(self, forceDownload=False):
         path = self.assetsPath + "images/inline/"
@@ -204,10 +207,7 @@ class AssetDumper:
             self.mkdir("%s%s" % (path, "/".join(tempPath)))
             print("elaboration inline %s" % asset[0])
             # inline image
-            file = open("%s%s.png" % (path, asset[0]), "wb")
-            file.write(self.extractSingleAssetWithKeys(path="", table="texture",
-                                                       asset_path=asset[1], forceDownload=forceDownload, returnValue=True))
-            file.close()
+            self.writeFile(asset[1], "%s%s.png" % (path, asset[0]))
         assets = mc.execute(
             "SELECT id, path FROM m_decoration_texture").fetchall()
         for asset in assets:
@@ -216,10 +216,7 @@ class AssetDumper:
             self.mkdir("%s%s" % (path, "/".join(tempPath)))
             print("elaboration decoration inline %s" % asset[0])
             # inline image
-            file = open("%s%s.png" % (path, asset[0]), "wb")
-            file.write(self.extractSingleAssetWithKeys(path="", table="texture",
-                                                       asset_path=asset[1], forceDownload=forceDownload, returnValue=True))
-            file.close()
+            self.writeFile(asset[1], "%s%s.png" % (path, asset[0]))
         assets = mc.execute("SELECT id, path FROM m_texture_mock").fetchall()
         for asset in assets:
             tempPath = asset[0].split("/")
@@ -227,10 +224,7 @@ class AssetDumper:
             self.mkdir("%s%s" % (mockPath, "/".join(tempPath)))
             print("elaboration inline %s" % asset[0])
             # inline image
-            file = open("%s%s.png" % (mockPath, asset[0]), "wb")
-            file.write(self.extractSingleAssetWithKeys(path="", table="texture",
-                                                       asset_path=asset[1], forceDownload=forceDownload, returnValue=True))
-            file.close()
+            self.writeFile(asset[1], "%s%s.png" % (mockPath, asset[0]))
         assets = mc.execute(
             "SELECT id, asset_path FROM m_card_trimming_live_deck").fetchall()
         for asset in assets:
@@ -239,10 +233,7 @@ class AssetDumper:
             self.mkdir("%s%s" % (path, "/".join(tempPath)))
             print("elaboration deck %s" % asset[0])
             # inline image
-            file = open("%s%s.png" % (path, asset[0]), "wb")
-            file.write(self.extractSingleAssetWithKeys(path="", table="texture",
-                                                       asset_path=asset[1], forceDownload=forceDownload, returnValue=True))
-            file.close()
+            self.writeFile(asset[1], "%s%s.png" % (path, asset[0]))
 
     def extractEmblem(self, forceDownload=False):
         path = self.assetsPath + "images/emblem/"
@@ -254,10 +245,7 @@ class AssetDumper:
         for asset in assets:
             print("elaboration emblem %i" % asset[0])
             # image
-            file = open("%stex_emblem_%i.jpg" % (path, asset[0]), "wb")
-            file.write(self.extractSingleAssetWithKeys(path="", table="texture",
-                                                       asset_path=asset[1], forceDownload=forceDownload, returnValue=True))
-            file.close()
+            self.writeFile(asset[1], "%stex_emblem_%i.jpg" % (path, asset[0]))
 
     def extractTrainingMaterial(self, forceDownload=False):
         path = self.assetsPath + "images/training_material/"
@@ -269,11 +257,8 @@ class AssetDumper:
         for asset in assets:
             print("elaboration training material %i" % asset[0])
             # image
-            file = open("%stex_training_material_%i.jpg" %
-                        (path, asset[0]), "wb")
-            file.write(self.extractSingleAssetWithKeys(path="", table="texture",
-                                                       asset_path=asset[1], forceDownload=forceDownload, returnValue=True))
-            file.close()
+            self.writeFile(
+                asset[1], "%stex_training_material_%i.jpg" % (path, asset[0]))
 
     def extractMemberInfo(self, forceDownload=False):
         path = self.assetsPath + "images/member/"
@@ -323,26 +308,19 @@ class AssetDumper:
             shaderIndex = 1
             # thumbnail image
             if extractThumbs:
-                file = open("%stex_suit_thumbnail_%i.jpg" %
-                            (imagePath, asset[0]), "wb")
-                file.write(self.extractSingleAssetWithKeys(path="", table="texture",
-                                                           asset_path=asset[1], forceDownload=forceDownload, returnValue=True))
-                file.close()
+                self.writeFile(asset[1], "%stex_suit_thumbnail_%i.jpg" % (imagePath, asset[0]))
             if extractModels == False:
                 continue
             # suit model
             try:
-                file = open("%ssuit_%i.unity3d" % (modelPath, asset[0]), "wb")
-                file.write(self.extractSingleAssetWithKeys(path="", table="member_model",
-                                                       asset_path=asset[2], forceDownload=forceDownload, returnValue=True))
-                file.close()
+                self.writeFile(asset[2], "%ssuit_%i.unity3d" % (modelPath, asset[0]), namelessOrigin="models/all/", table="member_model", forceDownload=forceDownload)
             except Exception as e:
                 print("Ignoring %i due to" % asset[0])
                 print(e)
                 if os.path.exists("%ssuit_%i.unity3d" % (modelPath, asset[0])):
                     os.remove("%ssuit_%i.unity3d" % (modelPath, asset[0]))
                 continue
-            
+
             # dependencies of model
 
             query = "SELECT dependency FROM member_model_dependency WHERE asset_path = \"%s\"" % asset[2].replace(
@@ -351,7 +329,7 @@ class AssetDumper:
             try:
                 for dependence in ac.execute(query):
                     file = open("%ssuit_dependency_%i_%i.unity3d" %
-                            (modelPath, asset[0], depIndex), "wb")
+                                (modelPath, asset[0], depIndex), "wb")
                     file.write(self.extractSingleAssetWithKeys(
                         path="", table="shader" if dependence[0] == "§M|" else "member_model", asset_path=dependence[0], forceDownload=forceDownload, returnValue=True))
                     file.close()
@@ -449,10 +427,10 @@ class AssetDumper:
             print("elaboration graphic %s" % asset[0])
             # inline image
             self.mkdir(path + asset[0])
-            file = open("%s%s/%i.png" % (path, asset[0], asset[1]), "wb")
-            file.write(self.extractSingleAssetWithKeys(path="", table="texture",
-                                                       asset_path=asset[2], forceDownload=forceDownload, returnValue=True))
-            file.close()
+            self.writeFile(asset[2], "%s%s/%i.png" % (path, asset[0], asset[1]))
+
+    def extractAllModels(self):
+        self.extractAssetsWithKeys("%s/models/all/" % self.assetsPath, "member_model")
 
     def extractBackground(self):
         self.extractAssetsWithKeys(
