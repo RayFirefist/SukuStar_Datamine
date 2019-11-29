@@ -142,13 +142,13 @@ class AssetDumper:
             print("elaboration card %i" % asset[0])
             isAwaken = "awaken" if asset[1] == 2 else "normal"
             # card illustration
-            self.writeFile(asset[2], "%stex_card_%i_%s.jpg" % (path, asset[0], isAwaken), forceDownload)
+            self.writeFile(asset[2], "%stex_card_%i_%s.jpg" % (path, asset[0], isAwaken), forceDownload=forceDownload)
             # thumb illustration
-            self.writeFile(asset[3], "%stex_thumb_%i_%s.jpg" % (path, asset[0], isAwaken), forceDownload)
+            self.writeFile(asset[3], "%stex_thumb_%i_%s.jpg" % (path, asset[0], isAwaken), forceDownload=forceDownload)
             # still thumb illustration
-            self.writeFile(asset[4], "%stex_still_thumb_%i_%s.jpg" % (path, asset[0], isAwaken), forceDownload)
+            self.writeFile(asset[4], "%stex_still_thumb_%i_%s.jpg" % (path, asset[0], isAwaken), forceDownload=forceDownload)
             # bg
-            self.writeFile(asset[5], "%stex_bg_%i_%s.jpg" % (path, asset[0], isAwaken), forceDownload)
+            self.writeFile(asset[5], "%stex_bg_%i_%s.jpg" % (path, asset[0], isAwaken), forceDownload=forceDownload)
 
     def extractStillIllus(self, forceDownload=False):
         path = self.assetsPath + "images/still/"
