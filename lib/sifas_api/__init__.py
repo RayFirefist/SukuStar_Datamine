@@ -27,8 +27,8 @@ class SifasApi:
         self.authCount = 1
         self.manifestVersion = "0"
         self.s = requests.session()
-        self.sessionKey = default_sessionKey
-        self.url = "https://jp-real-prod-v4tadlicuqeeumke.api.game25.klabgames.net/ep1021/"
+        self.sessionKey = b"I6ow2cY1c2wWXJP7"
+        self.url = "https://jp-real-prod-v4tadlicuqeeumke.api.game25.klabgames.net/ep1030/"
         self.platform = platform
         # account data
         try:
