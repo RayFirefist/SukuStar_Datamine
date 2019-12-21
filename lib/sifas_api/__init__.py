@@ -15,6 +15,7 @@ from lib.sifas_api.endpoints import SifasEndpoints
 
 from lib.penguin import masterDataRead, decrypt_stream, FileStream
 
+default_sessionKey = b"7xy2slp4ofSixvpZ"
 
 class SifasApi:
     def __init__(self, credentials="./config/credentials.json", startDir="./", platform="i"):
@@ -26,7 +27,7 @@ class SifasApi:
         self.authCount = 1
         self.manifestVersion = "0"
         self.s = requests.session()
-        self.sessionKey = b"I6ow2cY1c2wWXJP7"
+        self.sessionKey = default_sessionKey
         self.url = "https://jp-real-prod-v4tadlicuqeeumke.api.game25.klabgames.net/ep1021/"
         self.platform = platform
         # account data
@@ -148,8 +149,15 @@ class SifasApi:
             raise Exception("GET failed due to HTTP (%i)" %
                             response.status_code)
 
-    # creates the account from scratch
+    # creates the account from scratch. It will overwrite any existing data.
     def loginStartUp(self):
+        # automatically set data as you start from scratch
+        self.uid = 0
+        self.sequence = 1
+        self.authCount = 1
+        self.manifestVersion = "0"
+        self.sessionKey = default_sessionKey
+        # prepare for logging in
         rnd = os.urandom(0x20)
         pub = serialization.load_pem_public_key(
             open("%slib/sifas_api/klb.pub" % (self.startDir), "rb").read(),
