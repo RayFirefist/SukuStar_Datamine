@@ -191,7 +191,7 @@ class AssetDumper:
         #print(packs)
         print("Total packages: %i" % packs.__len__())
 
-        n = 1 # Split array
+        n = 500 # Split array
         # using list comprehension 
         final = [packs[i * n:(i + 1) * n] for i in range((len(packs) + n - 1) // n )] 
         if final.__len__() > 0:
