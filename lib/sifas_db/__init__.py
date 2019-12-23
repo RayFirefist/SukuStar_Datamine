@@ -34,6 +34,40 @@ OPERATION_ASSETS = {
     "Windows": os.link
 }
 
+# row factor
+def dict_factory(cursor, row):
+    d = {}
+    for idx, col in enumerate(cursor.description):
+        # print(idx, col)
+        #print(row)
+        d[col[0]] = row[idx]
+        #print("DEBUG: RESULT: %s" % d[col[0]])
+    return d
+
+# SQLite3 database
+class GameDatabase:
+    def __init__(self, path):
+        self.db = sqlite3.connect(path)
+        self.db.row_factory = dict_factory
+        pass
+
+    def query(self, query: str):
+        #print("DEBUG: %s" % query)
+        if query.find("SELECT") == -1:
+            self.db.execute(query)
+            self.db.commit()
+            return
+        result = self.db.execute(query)
+        columns = [column[0] for column in result.description]
+        out = []
+        for row in result:
+            out.append(dict(zip(columns, row)))
+        return out
+
+    def __del__(self):
+        print("Closing database...")
+        self.db.commit()
+
 class AssetDumper:
 
     def __init__(self, sifasApi: SifasApi, assetsPath="./", language="ja"):
@@ -49,12 +83,29 @@ class AssetDumper:
         self.assets = sqlite3.connect(
             self.assetsPath + "db/asset_%s_%s_0.db" % (platform, language))
         self.master = sqlite3.connect(self.assetsPath + "db/masterdata.db")
+        self.dictionaryDb = {
+            "k": GameDatabase("%sdb/dictionary_%s_k.db" % (self.assetsPath, language)),
+            "m": GameDatabase("%sdb/dictionary_%s_m.db" % (self.assetsPath, language)),
+            "s": GameDatabase("%sdb/dictionary_%s_s.db" % (self.assetsPath, language)),
+            "v": GameDatabase("%sdb/dictionary_%s_v.db" % (self.assetsPath, language))
+        }
         self.packs = {}
         try:
             os.makedirs("%spkg/" % self.assetsPath)
         except FileExistsError:
             pass
         pass
+
+    def getDictionaryDb(self, key):
+        return self.dictionaryDb.get(key)
+
+    def getString(self, key):
+        print("DEBUG INPUT: %s" % key)
+        temp = self.getDictionaryDb(key[:1]).query("SELECT * FROM m_dictionary WHERE id = '%s'" % key[2:])
+        print(temp)
+        temp = temp[0]['message'].replace("&apos;", "'")
+        print("DEBUG STRING: %s" % temp)
+        return temp
 
     def mkdir(self, path):
         try:
@@ -100,9 +151,10 @@ class AssetDumper:
 
     def getPkg(self, pkgFile, forceDownload=False):
         path = "%spkg/%s" % (self.assetsPath, pkgFile)
-        if os.path.exists(path) and not forceDownload:
+        if os.path.exists(path) and forceDownload == False:
             return open(path, "rb").read()
         else:
+            print("Downloading (getPkg) %s" % pkgFile)
             self.downloadPacks([pkgFile], True)
             temp = self.packs[pkgFile]
             del self.packs[pkgFile]
@@ -112,8 +164,11 @@ class AssetDumper:
         i = 0
 
         antiDupesPacks = []
+        filterRemovePacks = ['rgjprl']
         for pack in packs:
             if pack in antiDupesPacks:
+                continue
+            if pack in filterRemovePacks:
                 continue
             else:
                 antiDupesPacks.append(pack)
@@ -123,32 +178,39 @@ class AssetDumper:
             packsNew = []
             for pack in packs:
                 if os.path.exists("%spkg/%s" % (self.assetsPath, packs[i])):
-                    print("reading %s" % packs[i])
-                    data = open("%spkg/%s" %
-                                (self.assetsPath, packs[i]), "rb").read()
-                    self.packs[packs[i]] = data
-                    del packs[i]
+                    print("found %s" % packs[i])
+                    #data = open("%spkg/%s" % (self.assetsPath, packs[i]), "rb").read()
+                    # self.packs[packs[i]] = data
+                    # del packs[i]
                     i += 1
                 else:
+                    print("DEBUG: %s not found" % ("%spkg/%s" % (self.assetsPath, packs[i])))
                     packsNew.append(pack)
             packs = packsNew
 
-        i = 0
-        print(packs)
-        if packs.__len__() > 0:
-            urls = self.api.assetGetPackUrl(packs)
-            for url in urls:
-                print("downloading %s" % packs[i])
-                try:
-                    data = requests.get(url).content
-                    open("%spkg/%s" %
-                         (self.assetsPath, packs[i]), "wb").write(data)
-                    self.packs[packs[i]] = data
-                except Exception as e:
-                    print("ERROR 403 OR UNREACHABLE")
-                    print(e)
-                    pass
-                i += 1
+        #print(packs)
+        print("Total packages: %i" % packs.__len__())
+
+        n = 500 # Split array
+        # using list comprehension 
+        final = [packs[i * n:(i + 1) * n] for i in range((len(packs) + n - 1) // n )] 
+        if final.__len__() > 0:
+            for packs in final:
+                i = 0
+                print("Packages to download now: %i" % packs.__len__())
+                print(packs)
+                urls = self.api.assetGetPackUrl(packs)
+                for url in urls:
+                    print("downloading %s" % packs[i])
+                    try:
+                        data = requests.get(url).content
+                        open("%spkg/%s" % (self.assetsPath, packs[i]), "wb").write(data)
+                        #self.packs[packs[i]] = data
+                    except Exception as e:
+                        print("ERROR 403 OR UNREACHABLE")
+                        print(e)
+                        pass
+                    i += 1
             pass
 
         return antiDupesPacks
@@ -424,20 +486,20 @@ class AssetDumper:
 
     def extractBackground(self):
         self.extractAssetsWithKeys(
-            "%s/images/background/" % self.assetsPath, "background")
+            "%simages/background/" % self.assetsPath, "background")
 
     def extractLive2dSdModel(self):
         self.extractAssetsWithKeys(
-            "%s/images/live2d/sd_models/" % self.assetsPath, "live2d_sd_model")
+            "%simages/live2d/sd_models/" % self.assetsPath, "live2d_sd_model")
 
     def extractTexture(self):
-        self.extractAssetsWithKeys("%s/images/texture/" % self.assetsPath, "texture")
+        self.extractAssetsWithKeys("%simages/texture/" % self.assetsPath, "texture")
 
     def extractStage(self):
-        self.extractAssetsWithKeys("%s/models/stage/" % self.assetsPath, "stage")
+        self.extractAssetsWithKeys("%smodels/stage/" % self.assetsPath, "stage")
 
     def extractStageEffect(self):
-        self.extractAssetsWithKeys("%s/models/stage_effect/" % self.assetsPath, "stage_effect")
+        self.extractAssetsWithKeys("%smodels/stage_effect/" % self.assetsPath, "stage_effect")
 
     def extractMusicJackets(self, forceDownload=False):
         path = "%s/images/live/" % self.assetsPath
@@ -674,9 +736,7 @@ class AssetDumper:
             else:
                 fileExt = "bin"
             #  base64.b64encode(fileData[4].encode("utf-8")).decode("utf-8").replace("/", "_BACK_")
-            open(
-                "%s/%s.%s" %
+            self.writeDataInsideFile("%s%s.%s" %
                 (path, hashlib.md5(fileData[4].encode(
-                    'utf-8')).hexdigest(), fileExt), "wb"
-            ).write(decData)
+                    'utf-8')).hexdigest(), fileExt), decData)
             i += 1
