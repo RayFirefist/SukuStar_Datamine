@@ -9,6 +9,7 @@ class SifasEndpoints(Enum):
     EMBLEM_ACTIVATEEMBLEM = "/emblem/activateEmblem"
     TRAININGTREE_ACTIVATETRAININGTREECELL = "/trainingTree/activateTrainingTreeCell"
     USER_ADDACCESSORYBOXLIMIT = "/user/addAccessoryBoxLimit"
+    USERPFOFILE_FETCHPROFILE = "/userProfile/fetchProfile"
     BILLING_APPLEPURCHASE = "/billing/applePurchase"
     FRIEND_APPLY = "/friend/apply"
     FRIEND_APPLYOTHERSCENE = "/friend/applyOtherScene"
@@ -35,6 +36,7 @@ class SifasEndpoints(Enum):
     FRIEND_FETCHFRIENDLIST = "/friend/fetchFriendList"
     GACHA_FETCHGACHALIST = "/gacha/fetchGachaMenu"
     DATALINK_FETCHGAMESERVICEDATA = "/dataLink/fetchGameServiceData"
+
     #
     #
     #
