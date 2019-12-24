@@ -27,6 +27,7 @@ except Exception as e:
 import platform
 # JSON
 import json
+import traceback
 
 # Expected formats to hook
 EXPECTED_FORMATS = ['.jpg', '.png', '.unity3d', '.bin']
@@ -390,17 +391,17 @@ class AssetDumper:
                     if dependence[0] == "§M|":
                         print("shaders")
                         query = "SELECT dependency FROM shader_dependency WHERE asset_path = \"§M|\""
-                    for shaderDependence in ac.execute(query):
-                        file = open("%ssuit_shader_dependency_%i_%i.unity3d" % (
-                            modelPath, asset[0], shaderIndex), "wb")
-                        file.write(self.extractSingleAssetWithKeys(
-                            path="", table="shader", asset_path=shaderDependence[0], forceDownload=forceDownload, returnValue=True))
-                        file.close()
-                        shaderIndex += 1
+                        for shaderDependence in ac.execute(query):
+                            file = open("%ssuit_shader_dependency_%i_%i.unity3d" % (
+                                modelPath, asset[0], shaderIndex), "wb")
+                            file.write(self.extractSingleAssetWithKeys(
+                                path="", table="shader", asset_path=shaderDependence[0], forceDownload=forceDownload, returnValue=True))
+                            file.close()
+                            shaderIndex += 1
                     depIndex += 1
             except Exception as e:
                 print(e)
-                print(json.dumps(e.__traceback__))
+                traceback.print_exc()
 
     def extractAccessory(self, forceDownload=False):
         path = self.assetsPath + "images/accessory/"
