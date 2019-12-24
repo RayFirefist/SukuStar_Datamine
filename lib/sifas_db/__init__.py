@@ -25,6 +25,8 @@ except Exception as e:
     print(e)
 # Platform
 import platform
+# JSON
+import json
 
 # Expected formats to hook
 EXPECTED_FORMATS = ['.jpg', '.png', '.unity3d', '.bin']
@@ -398,7 +400,7 @@ class AssetDumper:
                     depIndex += 1
             except Exception as e:
                 print(e)
-                print(e.__traceback__)
+                print(json.dumps(e.__traceback__))
 
     def extractAccessory(self, forceDownload=False):
         path = self.assetsPath + "images/accessory/"
