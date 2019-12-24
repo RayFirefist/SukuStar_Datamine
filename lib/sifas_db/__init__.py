@@ -480,9 +480,11 @@ class AssetDumper:
             # inline image
             self.mkdir(path + asset[0])
             self.writeFile(asset[2], "%s%s/%i.png" % (path, asset[0], asset[1]))
-
+    
     def extractAllModels(self):
         self.extractAssetsWithKeys("%s/models/all/" % self.assetsPath, "member_model")
+        self.extractAssetsWithKeys("%s/models/all/" % self.assetsPath, "stage")
+        self.extractAssetsWithKeys("%s/models/all/" % self.assetsPath, "stage_effect")
 
     def extractBackground(self):
         self.extractAssetsWithKeys(
