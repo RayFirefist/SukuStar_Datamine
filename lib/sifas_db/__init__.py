@@ -398,6 +398,7 @@ class AssetDumper:
                     depIndex += 1
             except Exception as e:
                 print(e)
+                print(e.__traceback__)
 
     def extractAccessory(self, forceDownload=False):
         path = self.assetsPath + "images/accessory/"
@@ -485,6 +486,7 @@ class AssetDumper:
         self.extractAssetsWithKeys("%s/models/all/" % self.assetsPath, "member_model")
         self.extractAssetsWithKeys("%s/models/all/" % self.assetsPath, "stage")
         self.extractAssetsWithKeys("%s/models/all/" % self.assetsPath, "stage_effect")
+        self.extractAssetsWithKeys("%s/shaders/all/" % self.assetsPath, "shader")
 
     def extractBackground(self):
         self.extractAssetsWithKeys(
