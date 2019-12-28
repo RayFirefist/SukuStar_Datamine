@@ -73,14 +73,14 @@ class GameDatabase:
 
 class AssetDumper:
 
-    def __init__(self, sifasApi: SifasApi, assetsPath="./", language="ja"):
+    def __init__(self, sifasApi: SifasApi, assetsPath="./", language="ja", binPath="./"):
         platform = sifasApi.platform
         temp = "iOS" if platform == "i" else ""
         if temp == "":
             temp = "Android" if platform == "a" else "unknown"
         print("Platform detected: %s" % temp)
         self.assetsPath = assetsPath + "assets/" if assetsPath == "./" else assetsPath
-        self.binPaths = assetsPath + "lib/criware/hca/"
+        self.binPaths = binPath + "lib/criware/hca/" if binPath == "./" else binPath
         self.api = sifasApi
         self.language = language
         self.assets = sqlite3.connect(
