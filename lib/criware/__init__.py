@@ -7,13 +7,6 @@ import platform
 
 from .acb import UTFTable, TrackList, AFSArchive, wave_type_ftable  # Thanks Triangle
 
-acb = {
-    "UTFTable": UTFTable,
-    "TrackList": TrackList,
-    "AFSArchive": AFSArchive,
-    "wave_type_ftable": wave_type_ftable
-}
-
 import subprocess
 
 binaries = {
@@ -28,9 +21,9 @@ class AcbCriware:
         print("Written bytes")
         print(tempFile.write(acb_bytes))
         tempFile.close()
-        utf = acb.UTFTable(open("temp/tempAcb", "rb"))
-        self.cue = acb.TrackList(utf)
-        self.data_source = acb.AFSArchive(io.BytesIO(utf.rows[0]["AwbFile"]))
+        utf = UTFTable(open("temp/tempAcb", "rb"))
+        self.cue = TrackList(utf)
+        self.data_source = AFSArchive(io.BytesIO(utf.rows[0]["AwbFile"]))
         self.target_dir = target_dir
         self.utf = utf
         self.binPath = binPath
@@ -38,7 +31,7 @@ class AcbCriware:
     def processContents(self):
         for track in self.cue.tracks:
             print(track)
-            fileType = acb.wave_type_ftable.get(track.enc_type, track.enc_type)
+            fileType = wave_type_ftable.get(track.enc_type, track.enc_type)
             name = "{0}".format(track.name)
             print("Processing %s" % name)
             if fileType == ".hca":
@@ -60,10 +53,10 @@ class AwbCriware:
         print("Written bytes")
         print(tempFile.write(acb_bytes))
         tempFile.close()
-        utf = acb.UTFTable(open("temp/tempAcb", "rb"))
+        utf = UTFTable(open("temp/tempAcb", "rb"))
         print(utf)
-        self.cue = acb.TrackList(utf)
-        self.data_source = acb.AFSArchive(io.BytesIO(awb_bytes))
+        self.cue = TrackList(utf)
+        self.data_source = AFSArchive(io.BytesIO(awb_bytes))
         self.target_dir = target_dir
         self.utf = utf
         self.binPath = binPath
@@ -71,7 +64,7 @@ class AwbCriware:
     def processContents(self):
         for track in self.cue.tracks:
             print(track)
-            fileType = acb.wave_type_ftable.get(track.enc_type, track.enc_type)
+            fileType = wave_type_ftable.get(track.enc_type, track.enc_type)
             name = "{0}".format(track.name)
             print("Processing %s" % name)
             if fileType == ".hca":
