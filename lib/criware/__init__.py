@@ -1,10 +1,18 @@
+#!/usr/bin/python
 # CRIWARE HCA/ACB library
 
 import os
 import io
 import platform
 
-import lib.criware.acb as acb # Thanks Triangle
+from .acb import UTFTable, TrackList, AFSArchive, wave_type_ftable  # Thanks Triangle
+
+acb = {
+    "UTFTable": UTFTable,
+    "TrackList": TrackList,
+    "AFSArchive": AFSArchive,
+    "wave_type_ftable": wave_type_ftable
+}
 
 import subprocess
 

@@ -159,9 +159,7 @@ class AssetDumper:
         else:
             print("Downloading (getPkg) %s" % pkgFile)
             self.downloadPacks([pkgFile], True)
-            temp = self.packs[pkgFile]
-            del self.packs[pkgFile]
-            return temp
+            return open("%spkg/%s" % (self.assetsPath, pkgFile), "rb").read()
 
     def downloadPacks(self, packs: list, forceDownload: bool = False):
         i = 0
