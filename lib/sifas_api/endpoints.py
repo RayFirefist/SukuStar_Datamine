@@ -31,8 +31,14 @@ class SifasEndpoints(Enum):
     BOOTSTRAP_FETCHBOOTSTRAP = "/bootstrap/fetchBootstrap"
     DATALINK_FETCHDATALINKS = "/dataLink/fetchDataLinks"
     EMBLEM_FETCHEMBLEM = "/emblem/fetchEmblem"
+
+    # Event Marathon
     EVENTMARATHON_FETCHEVENTMARATHON = "/eventMarathon/fetchEventMarathon"
     EVENTMARATHONRANKING_FETCHEVENTMARATHONRANKING = "/eventMarathonRanking/fetchEventMarathonRanking"
+    # Event Mining
+    EVENTMINING_FETCHEVENTMINING = "/eventMining/fetchEventMining"
+    EVENTMININGRANKING_FETCHEVENTMININGRANKING = "/eventMiningRanking/fetchEventMiningRanking"
+
     FRIEND_FETCHFRIENDLIST = "/friend/fetchFriendList"
     GACHA_FETCHGACHALIST = "/gacha/fetchGachaMenu"
     DATALINK_FETCHGAMESERVICEDATA = "/dataLink/fetchGameServiceData"
