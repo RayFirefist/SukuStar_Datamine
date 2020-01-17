@@ -127,6 +127,7 @@ class AdvParser:
             self.parsedData = AdvData(head, scpt)
         return self.parsedData
 
+    # Use this for parsed data. Must be finalized!
     def parseJson(self):
         parsedData = self.parse()
         out = {
