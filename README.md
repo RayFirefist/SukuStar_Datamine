@@ -76,10 +76,11 @@ assetDumper.extractAudio(filter="") # extracts the audio files into WAV files. Y
 - [X] (WIP) assets naming
 - [ ] extract correctly unity files
 - [X] extract and deal with audio
+- [X] dealing with ADV scripts (NovelKit)
 
 # Credits
 
 * [esterTion](https://github.com/esterTion) for assets decryptor base script
 * CPPO for HCA key
-* [Triangle](https://github.com/summertriangle-dev) for acb.py lib
+* [Triangle](https://github.com/summertriangle-dev) for acb.py lib and for NovelKit bin parser
 * [Nyagamon](https://github.com/Nyagamon/HCADecoder) for HCA decoder source code.
