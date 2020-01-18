@@ -11,6 +11,8 @@ from lib.sifas_api import SifasApi
 from lib.sifas_api.endpoints import SifasEndpoints
 # Decrypt
 from lib.penguin import decrypt_stream
+# NovelKit
+from lib.novelkit import AdvParser
 # Unity
 # from lib.unity import UnityAssetBundle
 # Base64
@@ -452,7 +454,7 @@ class AssetDumper:
                     asset[2], forceDownload), tempPath, asset[0], self.binPaths)
             tempAcb.processContents()
 
-    def extractAdvScript(self, assetPathFilter:str="", forceDownload:bool=False):
+    def extractAdvScript(self, assetPathFilter:str="", forceDownload:bool=False, debug:bool = False):
         path = self.assetsPath + "adv/script/"
         self.mkdir(path)
         mc = self.master.cursor()
@@ -466,9 +468,14 @@ class AssetDumper:
             tempPath.pop()
             self.mkdir(path + "/".join(tempPath))
             file = open("%s/%s.bin" % (path, asset[0]), "wb")
-            file.write(self.extractSingleAssetWithKeys(path="", table="adv_script",
-                                                       asset_path=asset[0], forceDownload=forceDownload, returnValue=True))
+            byteData = self.extractSingleAssetWithKeys(path="", table="adv_script",
+                                                       asset_path=asset[0], forceDownload=forceDownload, returnValue=True)
+            file.write(byteData)
             file.close()
+            if (byteData.__len__() > 0):
+                file = open("%s/%s.json" % (path, asset[0]), "w")
+                file.write(AdvParser(byteData, debug).parseJson())
+                file.close()
 
     def extractAdvGraphics(self, scriptNameFilter:str="", forceDownload=False):
         path = self.assetsPath + "adv/graphics/"

@@ -53,6 +53,9 @@ def utf8_calc(c: int):
     else:
         return 1
 
+commands = ['&const', 'ef', 'enddelay', 'volume', 'waittext', 'talkstop', 'goto', 'clear', 'viewing', 'waitload', 'waitclick', 'click', 'preload', 'fade', 'bg', 'cg', 'se', 'bgmfade', 'sound', 'soundstop', 'fadesetting', 'wait', 'delay', 'enddelay', 'viewing', 'effection', 'label', 'window', 'ch', 'select', 'aisac', 'finalistselect', 'if', 'endif', 'else']
+badPrefix = ['@', '%', '$', '&', '#']
+
 class AdvData:
     def __init__(self, header, scpt):
         super().__init__()
@@ -60,9 +63,10 @@ class AdvData:
         self.scpt = scpt
 
 class AdvParser:
-    def __init__(self, bytesData: bytes):
+    def __init__(self, bytesData: bytes, debug : bool = False):
         self.bytesData = bytesData
         self.parsedData = None
+        self.debug = debug
         pass
 
     def decompress_internal(self, scptbuf: bytes, where: int, full_size: int) -> str:
@@ -127,6 +131,11 @@ class AdvParser:
             self.parsedData = AdvData(head, scpt)
         return self.parsedData
 
+    def isTalk(self, command):
+        if (command.__len__() == 0):
+            return False
+        return not (command in commands) and not (command[0] in badPrefix)
+
     # Use this for parsed data. Must be finalized!
     def parseJson(self):
         parsedData = self.parse()
@@ -149,7 +158,14 @@ class AdvParser:
                 continue
             lineData = line.split(" ")
 
+            wasTalkBefore = self.isTalk(lineData[0])
+
             if wasTalkBefore: # Text is handled in a very weird way so...
+                if self.debug: print("Now: %s" % wasTalkBefore)
+                if self.debug: print("This line: %s" % lineData)
+                # wasTalkBefore = self.isTalk(lineData[0])
+                if self.debug: print("Next: %s" % wasTalkBefore)
+                if self.debug: print("-" * 20)
                 data.append({
                     "command": "text",
                     "name": lineData[0],
@@ -157,7 +173,6 @@ class AdvParser:
                     "count": lineData[2] if lineData.__len__() >= 3 else None,
                     "additional_param": lineData[3:] if lineData.__len__() >= 4 else None
                 })
-                wasTalkBefore = False
                 continue
 
             temp = {
@@ -171,8 +186,18 @@ class AdvParser:
             elif lineData[0] == "&const": # Load const or consts source
                 temp['command'] = "const_load"
                 temp['var_name' if lineData[1].startswith("@") else "source"] = lineData[1]
-            elif lineData[0] == "#main": # Main code
-                temp['command'] = "main"
+            elif lineData[0].startswith("#"): # Goto label
+                temp['command'] = "goto_label"
+                temp['label'] = lineData[0]
+            elif lineData[0] == "goto": # Goto label
+                temp['command'] = "goto"
+                temp['goto'] = lineData[1]
+            elif lineData[0] == "select": # Goto label
+                temp['command'] = "select"
+                temp['goto'] = lineData[2]
+                temp['text'] = lineData[1]
+            elif lineData[0] == "clear": # Wait load
+                temp['command'] = "clear"
             elif lineData[0] == "waitload": # Wait load
                 temp['command'] = "waitload"
             elif lineData[0] == "waitclick": # Wait click
@@ -238,18 +263,15 @@ class AdvParser:
                 temp['command'] = "label"
                 temp['mode'] = lineData[1]
                 temp['value'] = lineData[2] if lineData.__len__() > 2 else None
-                wasTalkBefore = True
             elif lineData[0] == "window": # Window handling
                 temp['command'] = "window"
                 temp['mode'] = lineData[1]
-                temp['value'] = lineData[2]
+                temp['value'] = lineData[2] if lineData.__len__() > 2 else None
             elif lineData[0] == "ch": # Character handler
                 temp['command'] = "character"
                 temp['mode'] = lineData[2]
                 temp['id'] = lineData[1]
                 temp['params'] = lineData[3:]
-                if (lineData[2] == "talk"):
-                    wasTalkBefore = True
             else:
                 print("Missing %s" % line)
                 temp['command'] = "unknown"
