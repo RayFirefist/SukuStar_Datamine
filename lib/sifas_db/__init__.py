@@ -473,8 +473,12 @@ class AssetDumper:
             file.write(byteData)
             file.close()
             if (byteData.__len__() > 0):
+                data = AdvParser(byteData, debug)
                 file = open("%s/%s.json" % (path, asset[0]), "w")
-                file.write(AdvParser(byteData, debug).parseJson())
+                file.write(data.parseJson())
+                file.close()
+                file = open("%s/%s.txt" % (path, asset[0]), "w")
+                file.write(data.parseText())
                 file.close()
 
     def extractAdvGraphics(self, scriptNameFilter:str="", forceDownload=False):

@@ -53,7 +53,7 @@ def utf8_calc(c: int):
     else:
         return 1
 
-commands = ['&const', 'ef', 'enddelay', 'volume', 'waittext', 'talkstop', 'goto', 'clear', 'viewing', 'waitload', 'waitclick', 'click', 'preload', 'fade', 'bg', 'cg', 'se', 'bgmfade', 'sound', 'soundstop', 'fadesetting', 'wait', 'delay', 'enddelay', 'viewing', 'effection', 'label', 'window', 'ch', 'select', 'aisac', 'finalistselect', 'if', 'endif', 'else']
+commands = ['&const', 'ef', 'enddelay', 'volume', 'waittext', 'talkstop', 'goto', 'clear', 'viewing', 'waitload', 'waitclick', 'click', 'preload', 'fade', 'bg', 'cg', 'se', 'bgmfade', 'sound', 'soundstop', 'fadesetting', 'wait', 'delay', 'enddelay', 'viewing', 'effection', 'label', 'window', 'ch', 'select', 'aisac', 'finalistselect', 'if', 'endif', 'else', 'backeffection', 'phone', 'letterbox', 'movement', 'bgm', 'changewindow', 'chat', 'sp']
 badPrefix = ['@', '%', '$', '&', '#']
 
 class AdvData:
@@ -124,7 +124,7 @@ class AdvParser:
         return adv_script_t(res, dat)
 
     # Use this for object
-    def parse(self):
+    def parse(self) -> AdvData:
         if self.parsedData is None:
             head = adv_header_t._frombytes(self.bytesData[:kADVHeaderLength])
             scpt = self.load_script(self.bytesData)
@@ -136,8 +136,28 @@ class AdvParser:
             return False
         return not (command in commands) and not (command[0] in badPrefix)
 
+    # Using Triangle's demo script structure
+    # Obtaining text string for complete and clean output
+    def parseText(self) -> str:
+        output = ""
+        parsedData = self.parse()
+        header = adv_header_t._frombytes(self.bytesData[:kADVHeaderLength])
+        output += "# \x64(#)ADV script summary\n"
+        output += "# \x64(#)Resource segment?", "YES" if (header.data_flags & kADVHasResSegMask) else "NO"
+        output += "Compressed segments?", "YES" if (header.data_flags & kADVHasCompressionMask) else "NO"
+        output += "# \x64(#)Textual script header: %s\n" % header
+        if (header.data_flags & kADVHasResSegMask):
+            output += "-" * 7 + " BEGIN RESOURCE SEGMENT " + "-" * 20 + "\n"
+            output += parsedData.scpt.res_seg
+            output += "-" * 7 + " END RESOURCE SEGMENT " + "-" * 20 + "\n"
+        output += "\n\n"
+        output += "-" * 7 + " BEGIN DATA SEGMENT " + "-" * 20 + "\n"
+        output += parsedData.scpt.data_seg
+        output += "-" * 7 + " END DATA SEGMENT " + "-" * 20 + "\n"
+        return output
+
     # Use this for parsed data. Must be finalized!
-    def parseJson(self):
+    def parseJson(self) -> str:
         parsedData = self.parse()
         out = {
             "header": parsedData.header,
