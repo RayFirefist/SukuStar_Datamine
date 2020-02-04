@@ -57,7 +57,7 @@ assetDumper.extractMemberInfo() # extract member info images (autograph, standi
 assetDumper.extractSuit() # extract costumes preview and models (unity3d bundles)
 assetDumper.extractAccessory() # extract accessory thumbnails
 assetDumper.extractAudio() # extract audio into WAV file
-assetDumper.extractAdvScript() # extract scenario script
+assetDumper.extractAdvScript() # extract scenario script (bin, txt and json parsed data)
 assetDumper.extractAdvGraphics() # extract scenario graphics (like sprites)
 assetDumper.extractLessonAnimation() # extract lesson animation bundles (unity3d bundles)
 assetDumper.extractMusicJackets() # extract music jackets and bgs

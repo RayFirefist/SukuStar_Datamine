@@ -17,6 +17,7 @@ from lib.penguin import masterDataRead, decrypt_stream, FileStream
 
 default_sessionKey = b"7xy2slp4ofSixvpZ"
 
+
 class SifasApi:
     def __init__(self, credentials="./config/credentials.json", startDir="./", platform="i"):
         self.credentialsFile = credentials
@@ -28,8 +29,9 @@ class SifasApi:
         self.manifestVersion = "0"
         self.s = requests.session()
         self.sessionKey = b"I6ow2cY1c2wWXJP7"
-        self.url = "https://jp-real-prod-v4tadlicuqeeumke.api.game25.klabgames.net/ep1031/"
+        self.url = "https://jp-real-prod-v4tadlicuqeeumke.api.game25.klabgames.net/ep1040/"
         self.platform = platform
+        self.xorData = bytes.fromhex('65D780D3EED9AF5831FFD5B870C7649FAC254AC21A384B4769814F5EB11AC339')
         # account data
         try:
             jsonCred = json.loads(open(credentials, "r").read())
@@ -210,6 +212,7 @@ class SifasApi:
             return r
         self.authCount += 1
         self.sessionKey = self.xor(rnd, base64.b64decode(r['session_key']))
+        self.sessionKey = self.xor(self.sessionKey, self.xorData)
         self.updateFile()
         # self.termsAgreement()
         # print(r)

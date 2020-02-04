@@ -3,9 +3,9 @@ import struct
 import json
 
 CONST_KEYS = [
-    0x449ECC82,
-    0x7E3462AA,
-    0x273AFADE
+    0xe10398e5,
+    0xe0cbf8bf,
+    0x0bc28a8e
 ]
 
 class FileStream:
