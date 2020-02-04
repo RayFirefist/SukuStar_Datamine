@@ -143,9 +143,13 @@ class AdvParser:
         parsedData = self.parse()
         header = adv_header_t._frombytes(self.bytesData[:kADVHeaderLength])
         output += "# \x64(#)ADV script summary\n"
-        output += "# \x64(#)Resource segment?", "YES" if (header.data_flags & kADVHasResSegMask) else "NO"
-        output += "Compressed segments?", "YES" if (header.data_flags & kADVHasCompressionMask) else "NO"
-        output += "# \x64(#)Textual script header: %s\n" % header
+        output += "# \x64(#)Resource segment? "
+        output += "YES" if (header.data_flags & kADVHasResSegMask) else "NO"
+        output += "\n# \x64(#)Compressed segments? "
+        output += "YES" if (header.data_flags & kADVHasCompressionMask) else "NO"
+        output += "#\n# \x64(#)Textual script header: "
+        output += str(header)
+        output += "\n"
         if (header.data_flags & kADVHasResSegMask):
             output += "-" * 7 + " BEGIN RESOURCE SEGMENT " + "-" * 20 + "\n"
             output += parsedData.scpt.res_seg
@@ -153,7 +157,7 @@ class AdvParser:
         output += "\n\n"
         output += "-" * 7 + " BEGIN DATA SEGMENT " + "-" * 20 + "\n"
         output += parsedData.scpt.data_seg
-        output += "-" * 7 + " END DATA SEGMENT " + "-" * 20 + "\n"
+        output += "-" * 7 + " END DATA SEGMENT " + "-" * 20 + "\n\n"
         return output
 
     # Use this for parsed data. Must be finalized!
