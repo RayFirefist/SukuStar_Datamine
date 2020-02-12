@@ -15,9 +15,12 @@ from lib.sifas_api.endpoints import SifasEndpoints
 
 from lib.penguin import masterDataRead, decrypt_stream, FileStream
 
+# DO NOT EDIT ZONE START
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 default_sessionKey = b"7xy2slp4ofSixvpZ"
 
-
+# Take this as an abstract class, ergo don't use it alone!
 class SifasApi:
     def __init__(self, credentials="./config/credentials.json", startDir="./", platform="i"):
         self.credentialsFile = credentials
@@ -28,10 +31,10 @@ class SifasApi:
         self.authCount = 1
         self.manifestVersion = "0"
         self.s = requests.session()
-        self.sessionKey = b"I6ow2cY1c2wWXJP7"
-        self.url = "https://jp-real-prod-v4tadlicuqeeumke.api.game25.klabgames.net/ep1040/"
+        self.sessionKey = None
+        self.url = None
         self.platform = platform
-        self.xorData = bytes.fromhex('65D780D3EED9AF5831FFD5B870C7649FAC254AC21A384B4769814F5EB11AC339')
+        self.xorData = None
         # account data
         try:
             jsonCred = json.loads(open(credentials, "r").read())
@@ -52,8 +55,13 @@ class SifasApi:
         except:
             print("Failed to parse credentials file")
 
+    def interfaceCheck(self):
+        if (self.url is None and self.xorData is None):
+            raise Exception("Please use JapaneseSifasApi or WorldwideSifasApi")
+
     # Signing the data to ship to the server (must-do)
     def sign(self, endpoint, data):
+        self.interfaceCheck()
         endpoint = endpoint.encode("utf8")
         data_ = data.encode("utf8")
         # print(endpoint + b" " + data_)
@@ -64,7 +72,7 @@ class SifasApi:
 
     # writing data to the credentials file (WIP)
     def updateFile(self):
-
+        self.interfaceCheck()
         config = open(self.credentialsFile, "w")
         try:
             config.write(
@@ -92,6 +100,7 @@ class SifasApi:
             )
 
     def xor(self, a, b):
+        self.interfaceCheck()
         result = bytearray()
         for i in range(len(a)):
             result.append(a[i] ^ b[i])
@@ -99,6 +108,7 @@ class SifasApi:
 
     # sends the data to the server
     def send(self, endpoint: SifasEndpoints, data: dict):
+        self.interfaceCheck()
         endpoint = endpoint.value
         url = self.url + endpoint
         # a = android, i = ios
@@ -139,10 +149,11 @@ class SifasApi:
                 raise Exception("Maintenance")
             except KeyError:
                 pass
-            raise Exception("HTTP not 200 (%i)" % response.status_code)
+            raise Exception("HTTP not 200 (%i) on %s" % (response.status_code, endpoint))
 
     # Retreive data (useful for db downloading)
     def retreive(self, endpoint):
+        self.interfaceCheck()
         url = self.url + endpoint
         response = requests.get(url)
         if response.status_code == 200:
@@ -153,6 +164,7 @@ class SifasApi:
 
     # creates the account from scratch. It will overwrite any existing data.
     def loginStartUp(self):
+        self.interfaceCheck()
         # automatically set data as you start from scratch
         self.uid = 0
         self.sequence = 1
@@ -187,6 +199,7 @@ class SifasApi:
 
     # makes login to the server (must-do)
     def login(self):
+        self.interfaceCheck()
         rnd = os.urandom(0x20)
         pub = serialization.load_pem_public_key(
             open("%slib/sifas_api/klb.pub" % (self.startDir), "rb").read(),
@@ -221,19 +234,23 @@ class SifasApi:
 
     # agree ToS
     def termsAgreement(self):
+        self.interfaceCheck()
         r = self.send(SifasEndpoints.TERMS_AGREEMENT, {"terms_version": 1})
 
     # This allows to give you back a list of URLs which you can use for download packs from remote server
     def assetGetPackUrl(self, packs: list):
+        self.interfaceCheck()
         r = self.send(SifasEndpoints.ASSET_GETPACKURL, {"pack_names": packs})
         return r['url_list']
 
     # This allows to get the list of database
     def getDbList(self):
+        self.interfaceCheck()
         return masterDataRead(FileStream(self.retreive("/static/%s/masterdata_%s_ja" % (self.manifestVersion, self.platform))))
 
     # Downloads the databases and saves them into /assets/db
     def downloadDbs(self, dbsList: dict = None, assetsPath="./assets/"):
+        self.interfaceCheck()
         try:
             os.makedirs(assetsPath + "db/")
         except FileExistsError:
@@ -245,9 +262,31 @@ class SifasApi:
             baseFile = self.retreive("/static/%s/%s" %
                                      (self.manifestVersion, database['db_name']))
             decrypted = decrypt_stream(
-                baseFile, database['db_keys_list'][0], database['db_keys_list'][1], database['db_keys_list'][2])
+                self.server ,baseFile, database['db_keys_list'][0], database['db_keys_list'][1], database['db_keys_list'][2])
             deflated = zlib.decompress(decrypted, -zlib.MAX_WBITS)
             open("%sdb/%s" %
                  (assetsPath, database['db_name']), "wb").write(deflated)
         print("Version %s" % self.manifestVersion)
         open("%sdb/version" % (assetsPath), "w").write(self.manifestVersion)
+
+# ----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# DO NOT EDIT ZONE END
+# EDIT HERE PARAMETERS NOW
+
+# Japanese extension
+class JapaneseSifasApi(SifasApi):
+    def __init__(self, credentials='./config/credentials.json', startDir='./', platform='i'):
+        super().__init__(credentials=credentials, startDir=startDir, platform=platform)
+        self.url = "https://jp-real-prod-v4tadlicuqeeumke.api.game25.klabgames.net/ep1040/"
+        self.xorData = bytes.fromhex('65D780D3EED9AF5831FFD5B870C7649FAC254AC21A384B4769814F5EB11AC339')
+        self.sessionKey = b"I6ow2cY1c2wWXJP7"
+        self.server = "ja"
+
+# Worldwide extension
+class WorldwideSifasApi(SifasApi):
+    def __init__(self, credentials='./config/credentials.json', startDir='./', platform='i'):
+        super().__init__(credentials=credentials, startDir=startDir, platform=platform)
+        self.url = "TBA"
+        self.xorData = bytes.fromhex('FFFF') # TBA; Complete this if WW will reach at least 1.4.0
+        self.sessionKey = b"TBA"
+        self.server = "ww"

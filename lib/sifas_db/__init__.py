@@ -685,7 +685,7 @@ class AssetDumper:
                     continue
                 print("file size %i" % data.__len__())
                 data = decrypt_stream(
-                    data, 0x3039, fileData[2], fileData[3], True)
+                    self.api.server, data, 0x3039, fileData[2], fileData[3], True)
                 if returnValue:
                     return data
                 else:
@@ -730,7 +730,7 @@ class AssetDumper:
             print("File no. %i" % i)
             print("file size %i" % data.__len__())
             decData = decrypt_stream(
-                data, 0x3039, fileData[2], fileData[3], True)
+                self.api.server, data, 0x3039, fileData[2], fileData[3], True)
             print(decData[:4])
             if decData[:4] == b'Unit':
                 fileExt = "unity3d"
