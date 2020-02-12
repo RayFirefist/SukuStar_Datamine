@@ -28,10 +28,10 @@ class SifasApi:
         self.authCount = 1
         self.manifestVersion = "0"
         self.s = requests.session()
-        self.sessionKey = b"I6ow2cY1c2wWXJP7"
-        self.url = "https://jp-real-prod-v4tadlicuqeeumke.api.game25.klabgames.net/ep1040/"
+        self.sessionKey = sessionKey
+        self.url = url
         self.platform = platform
-        self.xorData = bytes.fromhex('65D780D3EED9AF5831FFD5B870C7649FAC254AC21A384B4769814F5EB11AC339')
+        self.xorData = xorData
         # account data
         try:
             jsonCred = json.loads(open(credentials, "r").read())
