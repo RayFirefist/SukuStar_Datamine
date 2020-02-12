@@ -149,7 +149,7 @@ class SifasApi:
                 raise Exception("Maintenance")
             except KeyError:
                 pass
-            raise Exception("HTTP not 200 (%i) on %s" % (response.status_code, endpoint))
+            raise Exception("HTTP not 200 (%i) on %s" % (response.status_code, url))
 
     # Retreive data (useful for db downloading)
     def retreive(self, endpoint):
@@ -277,7 +277,7 @@ class SifasApi:
 class JapaneseSifasApi(SifasApi):
     def __init__(self, credentials='./config/credentials.json', startDir='./', platform='i'):
         super().__init__(credentials=credentials, startDir=startDir, platform=platform)
-        self.url = "https://jp-real-prod-v4tadlicuqeeumke.api.game25.klabgames.net/ep1040/"
+        self.url = "https://jp-real-prod-v4tadlicuqeeumke.api.game25.klabgames.net/ep1040"
         self.xorData = bytes.fromhex('65D780D3EED9AF5831FFD5B870C7649FAC254AC21A384B4769814F5EB11AC339')
         self.sessionKey = b"I6ow2cY1c2wWXJP7"
         self.server = "ja"
