@@ -347,6 +347,18 @@ class AssetDumper:
             self.writeFile(asset[3], "%stex_member_icon_%i.png" % (path, asset[0]))
             # thumb image
             self.writeFile(asset[4], "%stex_member_thumbnail_%i.png" % (path, asset[0]))
+    
+    def extractMember2d(self, forceDownload=False):
+        path = self.assetsPath + "images/member2d/"
+        self.mkdir(path)
+        mc = self.master.cursor()
+        ac = self.assets.cursor()
+        assets = mc.execute(
+            "SELECT * FROM m_member_2d_model").fetchall()
+        for asset in assets:
+            print("elaboration member %i" % asset[0])
+            # standing image
+            self.writeFile(asset[1], "%stex_member_%i.png" % (path, asset[0]))
 
     def extractSuit(self, extractModels: bool = False, extractThumbs: bool = True, forceDownload=False):
         imagePath = self.assetsPath + "images/suit/"

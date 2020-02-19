@@ -35,6 +35,9 @@ assets*
 # Idol Story scripts
 *is*.py
 
+# Project Honoka scripts
+*ph*.py
+
 # scripts for test
 *mainE*
 
