@@ -11,9 +11,9 @@ CONST_KEYS = {
     ],
     # Worldwide client version
     "ww" : [
-        0xFFFFFFFF,
-        0xFFFFFFFF,
-        0xFFFFFFFF
+        0x6D3C95EA,
+        0xF1B952FD,
+        0x1BA88576
     ]
 }
 
