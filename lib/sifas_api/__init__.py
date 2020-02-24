@@ -268,9 +268,9 @@ class JapaneseSifasApi(SifasApi):
 class WorldwideSifasApi(SifasApi):
     def __init__(self, credentials='./config/credentials.json', startDir='./', platform='i'):
         # EDIT HERE START
-        sessionKey = b"TBA"
-        url = "TBA"
-        xorData = bytes.fromhex('FF') # TBA. Change this ONLY when it will reach 1.4.0 or higher
+        sessionKey = b"e0xrykyuBrLlwZhd"
+        url = "https://gl-real-prod-8f2jln5l4evlw5l1.api.game25.klabgames.net/ep1034/"
+        xorData = bytes.fromhex('B73DA9C0EE7116836995B5ACED4AA33B095ECAF77B33605833FD759E6E743F1D') # TBA. Change this ONLY when it will reach 1.4.0 or higher
         # EDIT HERE END
         super().__init__(sessionKey=sessionKey, url=url, xorData=xorData, credentials=credentials, startDir=startDir, platform=platform)
         self.server = "ww"
