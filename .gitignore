@@ -23,7 +23,8 @@ assets*
 /masterdata_i_ja
 
 # credentials json
-*credentials.json*
+*credentials*.json*
+*sifas.json
 
 # temp folder
 *temp*
@@ -43,3 +44,9 @@ assets*
 
 # HTML
 *.html
+
+# Manifest files
+manifest*
+
+# Apple macOS annoying files
+*DS_Store*

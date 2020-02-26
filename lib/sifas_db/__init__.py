@@ -7,7 +7,7 @@ import sqlite3
 # zlib
 import zlib
 # SIFAS API
-from lib.sifas_api import SifasApi
+from lib.sifas_api import SIFAS
 from lib.sifas_api.endpoints import SifasEndpoints
 # Decrypt
 from lib.penguin import decrypt_stream
@@ -75,8 +75,8 @@ class GameDatabase:
 
 class AssetDumper:
 
-    def __init__(self, sifasApi: SifasApi, assetsPath="./", language="ja", binPath="./"):
-        platform = sifasApi.platform
+    def __init__(self, sifasApi: SIFAS, assetsPath="./", binPath="./"):
+        platform = sifasApi.platform[:1]
         temp = "iOS" if platform == "i" else ""
         if temp == "":
             temp = "Android" if platform == "a" else "unknown"
@@ -84,9 +84,10 @@ class AssetDumper:
         self.assetsPath = assetsPath + "assets/" if assetsPath == "./" else assetsPath
         self.binPaths = binPath + "lib/criware/hca/" if binPath == "./" else binPath
         self.api = sifasApi
-        self.language = language
+        self.language = sifasApi.lang
+        language = sifasApi.lang
         self.assets = sqlite3.connect(
-            self.assetsPath + "db/asset_%s_%s_0.db" % (platform, language))
+            self.assetsPath + "db/asset_%s_%s%s.db" % (platform, language, "_0" if sifasApi.version == "JP" else ""))
         self.master = sqlite3.connect(self.assetsPath + "db/masterdata.db")
         self.dictionaryDb = {
             "k": GameDatabase("%sdb/dictionary_%s_k.db" % (self.assetsPath, language)),
@@ -492,6 +493,27 @@ class AssetDumper:
                 file = open("%s/%s.txt" % (path, asset[0]), "w")
                 file.write(data.parseText())
                 file.close()
+
+    def extractMovies(self, forceDownload:bool=False):
+        path = self.assetsPath + "movies/"
+        self.mkdir(path)
+        ac = self.assets.cursor()
+        assets = ac.execute(
+            "SELECT pack_name FROM m_movie"
+        ).fetchall()
+        for asset in assets:
+            print("elaboration movie %s" % asset[0])
+            # inline image
+            tempPath = asset[0].split("/")
+            tempPath.pop()
+            self.mkdir(path + "/".join(tempPath))
+            destination = "%s/%s.usm" % (path, asset[0])
+            self.downloadPacks([asset[0]])
+            try:
+                OPERATION_ASSETS[platform.system()]("%s/pkg/%s" % (self.assetsPath, asset[0]), destination)
+            except FileExistsError:
+                print("DEBUG: FILE EXISTS ALREADY IN %s. IGNORING..." %
+                      destination)
 
     def extractAdvGraphics(self, scriptNameFilter:str="", forceDownload=False):
         path = self.assetsPath + "adv/graphics/"
