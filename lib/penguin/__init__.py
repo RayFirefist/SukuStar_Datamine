@@ -2,19 +2,13 @@ import os
 import struct
 import json
 
+from lib.sifas_api.constants import VERSION_CONSTANTS_JP, VERSION_CONSTANTS_WW
+
 CONST_KEYS = {
     # Japanese client version
-    "ja" : [
-        0xe10398e5,
-        0xe0cbf8bf,
-        0x0bc28a8e
-    ],
+    "ja" : VERSION_CONSTANTS_JP['keys'],
     # Worldwide client version
-    "ww" : [
-        0x6D3C95EA,
-        0xF1B952FD,
-        0x1BA88576
-    ]
+    "ww" : VERSION_CONSTANTS_WW['keys']
 }
 
 
