@@ -39,7 +39,8 @@ adv_header_t = namedtuple("adv_header_t", (
 
 adv_header_t._description = struct.Struct("<BBIIIIBII")
 adv_header_t._frombytes = lambda bstr: adv_header_t._make(
-    adv_header_t._description.unpack(bstr))
+    adv_header_t._description.unpack(bstr)
+)
 
 adv_script_t = namedtuple("adv_script_t", ("res_seg", "data_seg"))
 
@@ -63,10 +64,11 @@ class AdvData:
         self.scpt = scpt
 
 class AdvParser:
-    def __init__(self, bytesData: bytes, debug : bool = False):
+    def __init__(self, bytesData: bytes, debug : bool = False, isEn : bool = False):
         self.bytesData = bytesData
         self.parsedData = None
         self.debug = debug
+        self.isEn = isEn
         pass
 
     def decompress_internal(self, scptbuf: bytes, where: int, full_size: int) -> str:
@@ -190,10 +192,22 @@ class AdvParser:
                 # wasTalkBefore = self.isTalk(lineData[0])
                 if self.debug: print("Next: %s" % wasTalkBefore)
                 if self.debug: print("-" * 20)
+                if self.isEn:
+                    tempLineData = line.split("||")
+                    try:
+                        name = tempLineData[0]
+                        text = tempLineData[1]
+                    except IndexError:
+                        name = lineData[0]
+                        text = lineData[1]
+                else:
+                    name = lineData[0]
+                    text = lineData[1]
+                    
                 data.append({
                     "command": "text",
-                    "name": lineData[0],
-                    "text": lineData[1],
+                    "name": name,
+                    "text": text,
                     "count": lineData[2] if lineData.__len__() >= 3 else None,
                     "additional_param": lineData[3:] if lineData.__len__() >= 4 else None
                 })

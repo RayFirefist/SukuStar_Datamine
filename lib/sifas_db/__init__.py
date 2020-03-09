@@ -486,7 +486,7 @@ class AssetDumper:
             file.write(byteData)
             file.close()
             if (byteData.__len__() > 0):
-                data = AdvParser(byteData, debug)
+                data = AdvParser(byteData, debug, isEn=self.api.lang == "en")
                 file = open("%s/%s.json" % (path, asset[0]), "w")
                 file.write(data.parseJson())
                 file.close()
@@ -744,7 +744,7 @@ class AssetDumper:
         # Extraction time
         query = "SELECT head, size, key1, key2, asset_path, pack_name FROM %s" % table
         queryResult = c.execute(query).fetchall()
-        print("Count %i" % queryResult.__len__())
+        #print("Count %i" % queryResult.__len__())
         for fileData in queryResult:
             isSkip = False
             for extension in EXPECTED_FORMATS:
@@ -752,7 +752,7 @@ class AssetDumper:
                 if os.path.exists(tempPath):
                     isSkip = not overwriteFile
             if isSkip: 
-                print("DEBUG: FILE %s EXISTS. IGNORING..." % hashlib.md5(fileData[4].encode("utf-8")).hexdigest())
+                #print("DEBUG: FILE %s EXISTS. IGNORING..." % hashlib.md5(fileData[4].encode("utf-8")).hexdigest())
                 continue
             try:
                 data = self.getPkg(fileData[5], forceDownload)[
@@ -761,11 +761,11 @@ class AssetDumper:
                 print("Failed to download the files")
                 print(e)
                 continue
-            print("File no. %i" % i)
-            print("file size %i" % data.__len__())
+            #print("File no. %i" % i)
+            #print("file size %i" % data.__len__())
             decData = decrypt_stream(
                 self.api.server, data, 0x3039, fileData[2], fileData[3], True)
-            print(decData[:4])
+            #print(decData[:4])
             if decData[:4] == b'Unit':
                 fileExt = "unity3d"
                 open("temp/tempUnity", "wb").write(decData)
