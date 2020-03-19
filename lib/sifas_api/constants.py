@@ -22,15 +22,15 @@ Unj9vj6kOBlOGv4JWQIDAQAB
 
 CURRENT_VERSION_JP = '34'
 
-CURRENT_VERSION_NAME_JP = '1.4.1'
+CURRENT_VERSION_NAME_JP = '1.5.0'
 
 VERSION_CONSTANTS_JP = {'keys': [
-	0xcb3992c, 0x75a632fd, 0x52d42eed
+	0x4324df0, 0x6dbd2c0, 0x104a1cc
 ], 
 'Il2CppSignatures': ['6417fe3a7703c81b4e1ab5d3f1e7c437', 'bc45e6a148e3e20da8792c35a9a67736a8f90583', 'a4e4505571dc866259352c9493ca4a5bdf60f5f5711c60f4ca4b0c042775565f'], 
 'JackpotSignatures': ['399191f2778deac9a94a66ba978d5527', '730f3316b99f0a9e88a350bb870c2fb9c785d6d3', '23cbd21caa9230053caf34bd04d890387f53643a4bf33b6030d172ec7d49ff04'], 
-'ep': 1041, 'fullEp': 'https://jp-real-prod-v4tadlicuqeeumke.api.game25.klabgames.net/ep1041', 
-'sessionKey': b'Sk0YIxhfI1msD6ku', 'dbStr': "x'B73DA9C0EE7116836995B5ACED4AA33B095ECAF77B33605833FD759E6E743F1D'", 'versionName': '1.4.0', 'version': '34',
+'ep': 1050, 'fullEp': 'https://jp-real-prod-v4tadlicuqeeumke.api.game25.klabgames.net/ep1050', 
+'sessionKey': b'HEfMsRCTP43dXl66', 'dbStr': "x'B73DA9C0EE7116836995B5ACED4AA33B095ECAF77B33605833FD759E6E743F1D'", 'versionName': '1.4.0', 'version': '34',
 'cert': b'''-----BEGIN PUBLIC KEY-----
 MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC/ZUSWq8LCuF2JclEp6uuW9+yd
 dLQvb2420+F8rxIF8+W53BiF8g9m6nCETdRw7RVnzNABevMndCCTD6oQ6a2w0Qpo

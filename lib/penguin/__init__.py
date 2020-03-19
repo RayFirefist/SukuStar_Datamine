@@ -98,6 +98,7 @@ def getKeyData(k: str):
 
 
 def masterDataRead(file: FileStream):
+    #print(file.data)
     file.position = 20
     hash = file.readString()
     lang = file.readString()
@@ -121,7 +122,8 @@ def masterDataRead(file: FileStream):
     for x in range(0, rows):
         v15 = file.readString()  # sha1 db
         v16 = file.readString()  # size db
-        out[x]['sha1'] = hex(int.from_bytes(file.read(20), byteorder="big"))
+        #out[x]['sha1'] = hex(int.from_bytes(file.read(20), byteorder="big"))
+        file.read(20)
         out[x]['size'] = file.readInt()
 
     return out
