@@ -115,7 +115,8 @@ class SIFAS:
         self.versionCode = consts["versionName"]
         self.sessionKey = consts['sessionKey']
         if self.version == "JP":
-            self.DMcryptoKey = bytes.fromhex("65D780D3EED9AF5831FFD5B870C7649FAC254AC21A384B4769814F5EB11AC339")
+            self.DMcryptoKey = bytes.fromhex("fc11a7f49cdcf784b8b7c7c4a1cfa0aa745a346d406a9fc142b5643e706ad2b2")
+            self.YetAnotherKey = bytes.fromhex("e4f84c384eeea5826dcaf1e60787a8f4fe1d5c3b28f6ee09179057d246d49b2e")
         else:
             self.DMcryptoKey = bytes.fromhex("294867DF7779DB803CEDAD92E1D53D966F43F425FE2BD9ECFAC6EA1CED6B7246")
         self.manifestVersion = "0"
@@ -377,6 +378,8 @@ class SIFAS:
         session_key = base64.b64decode(r['session_key'])
         self.sessionKey = self.xor(session_key, rnd)
         self.sessionKey = self.xor(self.DMcryptoKey, self.sessionKey)
+        if self.version == "JP":
+            self.sessionKey = self.xor(self.YetAnotherKey, self.sessionKey)
         self.authCount += 1
         self.dump()
 

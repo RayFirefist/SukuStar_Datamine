@@ -87,7 +87,7 @@ class AssetDumper:
         self.language = sifasApi.lang
         language = sifasApi.lang
         self.assets = sqlite3.connect(
-            self.assetsPath + "db/asset_%s_%s%s.db" % (platform, language, "_0" if sifasApi.version == "JP" else ""))
+            self.assetsPath + "db/asset_%s_%s%s.db" % (platform, language, "" if sifasApi.version == "JP" else ""))
         self.master = sqlite3.connect(self.assetsPath + "db/masterdata.db")
         self.dictionaryDb = {
             "k": GameDatabase("%sdb/dictionary_%s_k.db" % (self.assetsPath, language)),
