@@ -115,8 +115,8 @@ class SIFAS:
         self.versionCode = consts["versionName"]
         self.sessionKey = consts['sessionKey']
         if self.version == "JP":
-            self.DMcryptoKey = bytes.fromhex("fc11a7f49cdcf784b8b7c7c4a1cfa0aa745a346d406a9fc142b5643e706ad2b2")
-            self.YetAnotherKey = bytes.fromhex("e4f84c384eeea5826dcaf1e60787a8f4fe1d5c3b28f6ee09179057d246d49b2e")
+            self.DMcryptoKey = bytes.fromhex("86a06062276ecf7e717ba04ea598617e2fe4f1a274433216a368e1e6dabc6aac")
+            self.YetAnotherKey = bytes.fromhex("8c7776ace1cb03b6247d3cb36fb6433f63b8886209179b932812746dee35c098") # ServerEventReceiverKey
         else:
             self.DMcryptoKey = bytes.fromhex("294867DF7779DB803CEDAD92E1D53D966F43F425FE2BD9ECFAC6EA1CED6B7246")
         self.manifestVersion = "0"
@@ -219,6 +219,7 @@ class SIFAS:
             endpoint = endpoint.value
         if endpoint[0] == "/":
             endpoint = endpoint[1:]
+        print(endpoint)
         params = {"p": "a", "mv": None, "id": self.sequence, "u": None, "l": None,
                   "t": int(time.time() * 1000)}  # p=platform, id=request sequence
         url = self.getEP() + endpoint
@@ -281,6 +282,9 @@ class SIFAS:
                 r = self.send(endpoint, data)
                 print(r)
                 return r
+            if r.status_code == 503:
+                print("503: Service unavailable (maintenance?) due to:\n%s" % r.json()['message_%s' % self.lang])
+                raise Exception("Service unavailable")
             else:
                 print("Not retry: {}".format(self.retryCount))
                 raise Exception("HTTP Error {}".format(r.status_code))
