@@ -19,6 +19,7 @@ import urllib3, copy
 from lib.sifas_api.jackpot import JackpotCore
 from lib.sifas_api.firebase import FireBase
 from lib.sifas_api.constants import *
+import re
 
 urllib3.disable_warnings()
 
@@ -118,7 +119,8 @@ class SIFAS:
             self.DMcryptoKey = bytes.fromhex("86a06062276ecf7e717ba04ea598617e2fe4f1a274433216a368e1e6dabc6aac")
             self.YetAnotherKey = bytes.fromhex("8c7776ace1cb03b6247d3cb36fb6433f63b8886209179b932812746dee35c098") # ServerEventReceiverKey
         else:
-            self.DMcryptoKey = bytes.fromhex("294867DF7779DB803CEDAD92E1D53D966F43F425FE2BD9ECFAC6EA1CED6B7246")
+            self.DMcryptoKey = bytes.fromhex("fc11a7f49cdcf784b8b7c7c4a1cfa0aa745a346d406a9fc142b5643e706ad2b2")
+            self.YetAnotherKey = bytes.fromhex("e4f84c384eeea5826dcaf1e60787a8f4fe1d5c3b28f6ee09179057d246d49b2e") # ServerEventReceiverKey
         self.manifestVersion = "0"
         if os.path.exists("manifest_%s" % self.version.lower()):
             self.manifestVersion = open("manifest_%s" % self.version.lower(), "r", encoding="utf8").read()
@@ -197,11 +199,14 @@ class SIFAS:
         self.sessionKey = binascii.unhexlify(sessionKey.encode("u8"))
         self.pw = binascii.unhexlify(pw.encode("u8"))
 
-    def sign(self, endpoint, data):
-        endpoint = endpoint.encode("utf8")
-        data_ = data.encode("utf8")
+    def sign(self, endpoint, data, macOverride=None):
+        if macOverride is None:
+            endpoint = endpoint.encode("utf8")
+            data_ = data.encode("utf8")
         # print("sign with", self.sessionKey)
-        signature = hmac.new(self.sessionKey, b"/" + endpoint + b" " + data_, sha1).hexdigest()
+            signature = hmac.new(self.sessionKey, b"/" + endpoint + b" " + data_, sha1).hexdigest()
+        else:
+            signature = macOverride
         result = '[%s,"%s"]' % (data, signature)
         return result
 
@@ -214,11 +219,13 @@ class SIFAS:
     def getEP(self):
         return "%s/" % self.consts["fullEp"]
 
-    def send(self, endpoint, data):
+    def send(self, endpoint, data, hash=None, params_override={}):
         if type(endpoint) == SifasEndpoints:
             endpoint = endpoint.value
         if endpoint[0] == "/":
             endpoint = endpoint[1:]
+        if hash:
+            print("Override: " + hash)
         print(endpoint)
         params = {"p": "a", "mv": None, "id": self.sequence, "u": None, "l": None,
                   "t": int(time.time() * 1000)}  # p=platform, id=request sequence
@@ -254,13 +261,19 @@ class SIFAS:
         else:
             del (params["u"])
 
+        data_ = data
+
         if data is not None:
             data = json.dumps(data, separators=(',', ':')).replace("=", "\u003d")
         else:
             data = "null"
 
+        if params_override:
+            params = params_override
+
         url_ = endpoint + "?" + parse.urlencode(params)
-        data = self.sign(url_, data)
+        data = self.sign(url_, data, hash)
+        #print(data)
         # print(url_, data, params, headers)
         r = self.s.post(url, params=params, data=data, headers=headers,
                         # verify=False, proxies={"https": "127.0.0.1:8888"}
@@ -276,17 +289,18 @@ class SIFAS:
             if r.status_code == 410:
                 print("CLIENT UPGRADE REQUIRED!!!")
                 time.sleep(0xFFFFFFFF)
-            if r.status_code == 504 and self.retryCount < 5:
+            elif r.status_code == 504 and self.retryCount < 5:
                 print("Retry: {}".format(self.retryCount))
                 self.retryCount += 1
                 r = self.send(endpoint, data)
                 print(r)
                 return r
-            if r.status_code == 503:
+            elif r.status_code == 503:
                 print("503: Service unavailable (maintenance?) due to:\n%s" % r.json()['message_%s' % self.lang])
                 raise Exception("Service unavailable")
             else:
                 print("Not retry: {}".format(self.retryCount))
+                print(r.text)
                 raise Exception("HTTP Error {}".format(r.status_code))
         else:
             self.retryCount = 0
@@ -382,8 +396,7 @@ class SIFAS:
         session_key = base64.b64decode(r['session_key'])
         self.sessionKey = self.xor(session_key, rnd)
         self.sessionKey = self.xor(self.DMcryptoKey, self.sessionKey)
-        if self.version == "JP":
-            self.sessionKey = self.xor(self.YetAnotherKey, self.sessionKey)
+        self.sessionKey = self.xor(self.YetAnotherKey, self.sessionKey)
         self.authCount += 1
         self.dump()
 
