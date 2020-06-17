@@ -117,10 +117,10 @@ class SIFAS:
         self.sessionKey = consts['sessionKey']
         if self.version == "JP":
             self.DMcryptoKey = bytes.fromhex("2f4011d553fca4cf9e970e4c5f3d959500e286b53be46ec9ce687b2c31ec5767")
-            self.YetAnotherKey = bytes.fromhex("31f1f9dc7ac4392d1de26acf99d970e425b63335b461e720c73d6914020d6014") # ServerEventReceiverKey
+            self.ServerEventReceiverKey = bytes.fromhex("31f1f9dc7ac4392d1de26acf99d970e425b63335b461e720c73d6914020d6014") # ServerEventReceiverKey
         else:
             self.DMcryptoKey = bytes.fromhex("fc11a7f49cdcf784b8b7c7c4a1cfa0aa745a346d406a9fc142b5643e706ad2b2")
-            self.YetAnotherKey = bytes.fromhex("e4f84c384eeea5826dcaf1e60787a8f4fe1d5c3b28f6ee09179057d246d49b2e") # ServerEventReceiverKey
+            self.ServerEventReceiverKey = bytes.fromhex("e4f84c384eeea5826dcaf1e60787a8f4fe1d5c3b28f6ee09179057d246d49b2e") # ServerEventReceiverKey
         self.manifestVersion = "0"
         if os.path.exists("manifest_%s" % self.version.lower()):
             self.manifestVersion = open("manifest_%s" % self.version.lower(), "r", encoding="utf8").read()
@@ -395,8 +395,11 @@ class SIFAS:
 
         session_key = base64.b64decode(r['session_key'])
         self.sessionKey = self.xor(session_key, rnd)
-        self.sessionKey = self.xor(self.DMcryptoKey, self.sessionKey)
-        self.sessionKey = self.xor(self.YetAnotherKey, self.sessionKey)
+        if not self.server == "ja":
+            self.sessionKey = self.xor(self.DMcryptoKey, self.sessionKey)
+        self.sessionKey = self.xor(self.ServerEventReceiverKey, self.sessionKey)
+        if self.server == "ja":
+            self.sessionKey = self.xor(bytes.fromhex('78d53d9e645a0305602174e06b98d81f638eaf4a84db19c756866fddac360c96'), self.sessionKey)
         self.authCount += 1
         self.dump()
 
