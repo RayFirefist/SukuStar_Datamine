@@ -29,7 +29,7 @@ VERSION_CONSTANTS_JP = {'keys': [
 ], 
 'Il2CppSignatures': ['6417fe3a7703c81b4e1ab5d3f1e7c437', 'bc45e6a148e3e20da8792c35a9a67736a8f90583', 'a4e4505571dc866259352c9493ca4a5bdf60f5f5711c60f4ca4b0c042775565f'], 
 'JackpotSignatures': ['399191f2778deac9a94a66ba978d5527', '730f3316b99f0a9e88a350bb870c2fb9c785d6d3', '23cbd21caa9230053caf34bd04d890387f53643a4bf33b6030d172ec7d49ff04'], 
-'ep': 1070, 'fullEp': 'https://jp-real-prod-v4tadlicuqeeumke.api.game25.klabgames.net/ep1070', 
+'ep': 1071, 'fullEp': 'https://jp-real-prod-v4tadlicuqeeumke.api.game25.klabgames.net/ep1071', 
 'sessionKey': bytes.fromhex('73344131674249494473596c794f344a'), 'dbStr': "x'B73DA9C0EE7116836995B5ACED4AA33B095ECAF77B33605833FD759E6E743F1D'", 'versionName': '1.7.0', 'version': '34',
 'cert': b'''-----BEGIN PUBLIC KEY-----
 MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC/ZUSWq8LCuF2JclEp6uuW9+yd
