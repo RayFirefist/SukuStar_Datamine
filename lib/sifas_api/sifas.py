@@ -119,8 +119,8 @@ class SIFAS:
             self.DMcryptoKey = bytes.fromhex("2f4011d553fca4cf9e970e4c5f3d959500e286b53be46ec9ce687b2c31ec5767")
             self.ServerEventReceiverKey = bytes.fromhex("31f1f9dc7ac4392d1de26acf99d970e425b63335b461e720c73d6914020d6014") # ServerEventReceiverKey
         else:
-            self.DMcryptoKey = bytes.fromhex("86a06062276ecf7e717ba04ea598617e2fe4f1a274433216a368e1e6dabc6aac")
-            self.ServerEventReceiverKey = bytes.fromhex("8c7776ace1cb03b6247d3cb36fb6433f63b8886209179b932812746dee35c098") # ServerEventReceiverKey
+            self.DMcryptoKey = bytes.fromhex("78d53d9e645a0305602174e06b98d81f638eaf4a84db19c756866fddac360c96")
+            self.ServerEventReceiverKey = bytes.fromhex("31f1f9dc7ac4392d1de26acf99d970e425b63335b461e720c73d6914020d6014") # ServerEventReceiverKey
         self.manifestVersion = "0"
         if os.path.exists("manifest_%s" % self.version.lower()):
             self.manifestVersion = open("manifest_%s" % self.version.lower(), "r", encoding="utf8").read()
@@ -395,11 +395,9 @@ class SIFAS:
 
         session_key = base64.b64decode(r['session_key'])
         self.sessionKey = self.xor(session_key, rnd)
-        if not self.server == "ja":
-            self.sessionKey = self.xor(self.DMcryptoKey, self.sessionKey)
         self.sessionKey = self.xor(self.ServerEventReceiverKey, self.sessionKey)
-        if self.server == "ja":
-            self.sessionKey = self.xor(bytes.fromhex('78d53d9e645a0305602174e06b98d81f638eaf4a84db19c756866fddac360c96'), self.sessionKey)
+        ja_key = '78d53d9e645a0305602174e06b98d81f638eaf4a84db19c756866fddac360c96'
+        self.sessionKey = self.xor(bytes.fromhex(ja_key), self.sessionKey)
         self.authCount += 1
         self.dump()
 

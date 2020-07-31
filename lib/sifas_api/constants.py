@@ -1,14 +1,14 @@
-CURRENT_VERSION_WW = '7344'
+CURRENT_VERSION_WW = '8840'
 
-CURRENT_VERSION_NAME_WW = '1.6.0'
+CURRENT_VERSION_NAME_WW = '1.7.0'
 
 VERSION_CONSTANTS_WW = {'keys': [
-	1905626912, -90134458, -1519556251
+	1598741755, 2018931652, 1266131476
 ], 
 'Il2CppSignatures': ['5f2a88bf074fd06a65e89bcbbca2212b', 'ec683fa710a06806d7e4dba9e0c8c775b831c820', '8147b4ae3d2bc8690d5af0ce1efd6ed242fac0c4890a9835988bd7d217aac82e'], 
 'JackpotSignatures': ['52f15d0e50eae5c8cd8e9dc0c86ca2c4', 'c22b425e0c6e03c2486eca77b132d8039c173a68', '310845316c814ff6c80a921e7d1315b75b6da107da33eb56e1d88a0de6e8d6ae'], 
-'ep': 1063, 'fullEp': 'https://gl-real-prod-8f2jln5l4evlw5l1.api.game25.klabgames.net/ep1063', 
-'sessionKey': bytes.fromhex('4648377a41677753776437386276515a'), 'dbStr': "x'B73DA9C0EE7116836995B5ACED4AA33B095ECAF77B33605833FD759E6E743F1D'", 'versionName': '1.6.0', 'version': '7652',
+'ep': 1073, 'fullEp': 'https://gl-real-prod-8f2jln5l4evlw5l1.api.game25.klabgames.net/ep1073', 
+'sessionKey': bytes.fromhex('647a4c387046394a4e66536b73776748'), 'dbStr': "x'B73DA9C0EE7116836995B5ACED4AA33B095ECAF77B33605833FD759E6E743F1D'", 'versionName': '1.7.0', 'version': '7652',
 'cert': b'''-----BEGIN PUBLIC KEY-----
 MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC/ZUSWq8LCuF2JclEp6uuW9+yd
 dLQvb2420+F8rxIF8+W53BiF8g9m6nCETdRw7RVnzNABevMndCCTD6oQ6a2w0Qpo
