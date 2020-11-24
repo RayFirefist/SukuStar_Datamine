@@ -119,7 +119,7 @@ class SIFAS:
             self.DMcryptoKey = bytes.fromhex("2f4011d553fca4cf9e970e4c5f3d959500e286b53be46ec9ce687b2c31ec5767")
             self.ServerEventReceiverKey = bytes.fromhex("31f1f9dc7ac4392d1de26acf99d970e425b63335b461e720c73d6914020d6014") # ServerEventReceiverKey
         else:
-            self.DMcryptoKey = bytes.fromhex("78d53d9e645a0305602174e06b98d81f638eaf4a84db19c756866fddac360c96")
+            self.DMcryptoKey = bytes.fromhex("2f4011d553fca4cf9e970e4c5f3d959500e286b53be46ec9ce687b2c31ec5767")
             self.ServerEventReceiverKey = bytes.fromhex("31f1f9dc7ac4392d1de26acf99d970e425b63335b461e720c73d6914020d6014") # ServerEventReceiverKey
         self.manifestVersion = "0"
         if os.path.exists("manifest_%s" % self.version.lower()):
