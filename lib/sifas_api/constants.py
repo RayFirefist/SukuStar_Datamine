@@ -7,7 +7,7 @@ VERSION_CONSTANTS_WW = {'keys': [
 ],
     'Il2CppSignatures': ['5f2a88bf074fd06a65e89bcbbca2212b', 'ec683fa710a06806d7e4dba9e0c8c775b831c820', '8147b4ae3d2bc8690d5af0ce1efd6ed242fac0c4890a9835988bd7d217aac82e'],
     'JackpotSignatures': ['52f15d0e50eae5c8cd8e9dc0c86ca2c4', 'c22b425e0c6e03c2486eca77b132d8039c173a68', '310845316c814ff6c80a921e7d1315b75b6da107da33eb56e1d88a0de6e8d6ae'],
-    'ep': 1075, 'fullEp': 'https://gl-real-prod-8f2jln5l4evlw5l1.api.game25.klabgames.net/ep1075',
+    'ep': 1075, 'fullEp': 'https://gl-real-prod-8f2jln5l4evlw5l1.api.game25.klabgames.net/ep1083',
     'sessionKey': bytes.fromhex('76766d583766386b6463616b4475506d'), 'dbStr': "x'B73DA9C0EE7116836995B5ACED4AA33B095ECAF77B33605833FD759E6E743F1D'", 'versionName': '1.8.0', 'version': '7346',
     'cert': b'''-----BEGIN PUBLIC KEY-----
 MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC/ZUSWq8LCuF2JclEp6uuW9+yd
