@@ -14,7 +14,7 @@ Name reference: Blazblue Cross Tag Battle's quote: "Can't escape from crossing f
 * Run on cmd/bash/zsh `pip install --no-binary unitypack unitypack` for installing unity assets extraction library
 * Then run `python createAccount.py` to create a new account.
 
-### Sample commands
+### Sample commands
 
 #### Calling API and log in with your account
 
