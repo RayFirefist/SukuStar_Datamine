@@ -33,13 +33,14 @@ api.assetGetPackUrl(["aaaa", "bbbb"]) # those are not legit bundle names
 ```
 
 #### Download all the database files
+
 ```python
 # not copying the login procedure so you must have logged before
 dbList = api.getDbList()
 api.downloadDbs(dbList) # everything will be downloaded into 'assets/db'
 ```
 
-#### Extracting some assets
+#### Extracting some assets
 
 WARNING: make sure that you already downloaded/updated your database or you won't see new assets or it will occurr into errors!
 

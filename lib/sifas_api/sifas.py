@@ -116,7 +116,7 @@ class SIFAS:
         self.versionCode = consts["versionName"]
         self.sessionKey = consts['sessionKey']
         if self.version == "JP":
-            self.DMcryptoKey = bytes.fromhex("2f4011d553fca4cf9e970e4c5f3d959500e286b53be46ec9ce687b2c31ec5767")
+            self.DMcryptoKey = bytes.fromhex("78d53d9e645a0305602174e06b98d81f638eaf4a84db19c756866fddac360c96")
             self.ServerEventReceiverKey = bytes.fromhex("31f1f9dc7ac4392d1de26acf99d970e425b63335b461e720c73d6914020d6014") # ServerEventReceiverKey
         else:
             self.DMcryptoKey = bytes.fromhex("2f4011d553fca4cf9e970e4c5f3d959500e286b53be46ec9ce687b2c31ec5767")
@@ -226,7 +226,6 @@ class SIFAS:
             endpoint = endpoint[1:]
         if hash:
             print("Override: " + hash)
-        print(endpoint)
         params = {"p": "a", "mv": None, "id": self.sequence, "u": None, "l": None,
                   "t": int(time.time() * 1000)}  # p=platform, id=request sequence
         url = self.getEP() + endpoint
@@ -234,6 +233,7 @@ class SIFAS:
             params['l'] = self.lang
         else:
             del(params['l'])
+        #print(endpoint, params)
         if self.platform == "android":
             headers = {
                 "user-agent": "okhttp/3.9.1",
@@ -273,7 +273,7 @@ class SIFAS:
 
         url_ = endpoint + "?" + parse.urlencode(params)
         data = self.sign(url_, data, hash)
-        #print(data)
+        print(url_)
         # print(url_, data, params, headers)
         r = self.s.post(url, params=params, data=data, headers=headers,
                         # verify=False, proxies={"https": "127.0.0.1:8888"}
