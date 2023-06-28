@@ -1,7 +1,7 @@
-from lib.sifas_api import SifasApi
+from lib.sifas_api import JapaneseSifasApi
 from lib.sifas_api.endpoints import SifasEndpoints
 
-api = SifasApi()
+api = JapaneseSifasApi()
 
 api.login()
 api.downloadDbs()

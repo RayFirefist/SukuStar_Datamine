@@ -398,8 +398,11 @@ class AssetDumper:
                 for dependence in ac.execute(query):
                     file = open("%ssuit_dependency_%i_%i.unity3d" %
                                 (modelPath, asset[0], depIndex), "wb")
-                    file.write(self.extractSingleAssetWithKeys(
-                        path="", table="shader" if dependence[0] == "§M|" else "member_model", asset_path=dependence[0], forceDownload=forceDownload, returnValue=True))
+                    blob = self.extractSingleAssetWithKeys(
+                        path="", table="shader" if dependence[0] == "§M|" or dependence[0] == "§?D#" else "member_model", asset_path=dependence[0], forceDownload=forceDownload, returnValue=True)
+                    if blob is None:
+                        raise Exception("blob is None")
+                    file.write(blob)
                     file.close()
                     if dependence[0] == "§M|":
                         print("shaders")

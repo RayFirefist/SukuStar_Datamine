@@ -1,8 +1,8 @@
 from lib.sifas_db import AssetDumper
-from lib.sifas_api import SifasApi
+from lib.sifas_api import JapaneseSifasApi as SifasApi
 
 api = SifasApi()
-api.loginStartUp()
+api.login()
 assets = AssetDumper(api)
 
 # assets = AssetDumper(None)
